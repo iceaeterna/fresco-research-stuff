@@ -1,4 +1,5 @@
   Fresco使用了类似于MVC模式的结构来完成图片显示、图像控制和图片数据加载框架的设计。
+  ![](https://github.com/icemoonlol/fresco-research-stuff/blob/master/main-stuff/img/fresco_mvc.png)
   __DraweeView(视图层)：__
   负责图片显示以及交互事件的转发。DraweeView通过一个DraweeHolder对象持有对控制器DraweeController和模型DraweeHierarchy的引用，分别用来(DraweeController)设置图像数据源、交互事件以及图像数据处理，和(DraweeHierarchy)获取最终用于绘制显示的Drawable图像。
   视图层的分离，解除了与图像显示、图像数据获取的重耦合，并且当图像数据获取方式变化、图像显示效果需求变化时，不会对视图层的逻辑产生影响。
@@ -22,6 +23,6 @@
   
   #####四、Fresco资源池模型
   
-  #####五、DraweeHierarchy图层管理
+  #####五、DraweeHierarchy图层管理(未完成)
  
 
