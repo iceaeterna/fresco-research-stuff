@@ -1,17 +1,17 @@
 ####二、ImagePipeline工作过程
 #####1.ImagePipeline简介
-> > 下面关于ImagePipeline的描述引自http://fresco-cn.org/docs/configure-image-pipeline.html#_：
-Image pipeline 负责完成加载图像，变成Android设备可呈现的形式所要做的每个事情。
-大致流程如下:
-检查内存缓存，如有，返回
-后台线程开始后续工作
-检查是否在未解码内存缓存中。如有，解码，变换，返回，然后缓存到内存缓存中。
-检查是否在文件缓存中，如果有，变换，返回。缓存到未解码缓存和内存缓存中。
-从网络或者本地加载。加载完成后，解码，变换，返回。存到各个缓存中。
-既然本身就是一个图片加载组件，那么一图胜千言。
-![](http://fresco-cn.org/static/imagepipeline.png)
-上图中，disk cache实际包含了未解码的内存缓存在内，统一在一起只是为了逻辑稍微清楚一些。关于缓存，更多细节可以参考这里。
-Image pipeline 可以从本地文件加载文件，也可以从网络。支持PNG，GIF，WebP, JPEG。
+> > 下面关于ImagePipeline的描述引自http://fresco-cn.org/docs/configure-image-pipeline.html#_：   
+Image pipeline 负责完成加载图像，变成Android设备可呈现的形式所要做的每个事情。   
+大致流程如下:   
+检查内存缓存，如有，返回   
+后台线程开始后续工作   
+检查是否在未解码内存缓存中。如有，解码，变换，返回，然后缓存到内存缓存中。   
+检查是否在文件缓存中，如果有，变换，返回。缓存到未解码缓存和内存缓存中。   
+从网络或者本地加载。加载完成后，解码，变换，返回。存到各个缓存中。   
+既然本身就是一个图片加载组件，那么一图胜千言。   
+![](http://fresco-cn.org/static/imagepipeline.png)   
+上图中，disk cache实际包含了未解码的内存缓存在内，统一在一起只是为了逻辑稍微清楚一些。   
+Image pipeline 可以从本地文件加载文件，也可以从网络。支持PNG，GIF，WebP, JPEG。   
 
 #####2.ImagePipeline构造
 &#8195;在初始化Fresco的过程中，将初始化ImagePipelineFactory和Drawee部分。Drawee部分的初始化就是创建一个静态的PipelineDraweeControllerBuilderSupplier实例，那么后面将由ImagePipelineFactory的初始化开始，揭开ImagePipeline的神秘面纱。
@@ -189,7 +189,7 @@ public class ImagePipelineFactory {
     }
   }
 ```
-关于流水线配置的部分参考[流水线配置](http://)
+关于流水线配置的部分参考[流水线配置](https://github.com/icemoonlol/fresco-research-stuff/blob/master/main-stuff/imagepipeline/producer_sequence.md)
 #####(2).ImagePipeline图片请求配置
 &#8195;在配置完流水线后，ImagePipeline将会发起图片请求，并把图片请求和处理的工作交给流水线完成。
 ```
@@ -256,7 +256,8 @@ public static <T> DataSource<CloseableReference<T>> create(
 public interface Consumer<T> {
   /**
    * 当有新数据产生时由生产者调用。 该方法不应抛出任何异常。
-   * 注意，返回结果可能是可关闭引用，为了有效管理内容使用，生产者在onNewResult调用后会关闭该引用，如果想在onNewResult之后还想要获取返回结果，消费者就必须创建返回资源的副本。
+   * 注意，返回结果可能是可关闭引用，为了有效管理内容使用，生产者在onNewResult调用后会关闭该引用，
+   * 如果想在onNewResult之后还想要获取返回结果，消费者就必须创建返回资源的副本。
    * @param newResult 
    * @param isLast 当这是最终结果时为true
    */

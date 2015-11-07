@@ -84,7 +84,7 @@ public GenericDraweeView(Context context, GenericDraweeHierarchy hierarchy) {
   }
   ```
 &#8195;init()初始化了mSimpleDraweeControllerBuilder成员，从命名上可以看出，该成员是SimpleDraweeView所持有的DraweeController的建造者([构造者模式](https://github.com/icemoonlol/fresco-research-stuff/blob/master/main-stuff/drawee-research-stuff/Builder%20Pattern.md))。它是由Fresco系统初始化时创建的Fresco静态私有类成员sDraweeControllerBuilderSupplier所提供的建造者([Supplier模式](https://github.com/icemoonlol/fresco-research-stuff/blob/master/main-stuff/drawee-research-stuff/Supplier.md))。
-######<font color = red>(1).调用SimpleDraweeView的setImageURI()设置图像来源</font>
+#####(1).调用SimpleDraweeView的setImageURI()设置图像来源
 &#8195;那么有了Builder，DraweeController是在是什么时候被创建的？我们可以在SimpleDraweeView中找到答案：
 ```
   public void setImageURI(Uri uri, @Nullable Object callerContext) {
@@ -106,7 +106,7 @@ public GenericDraweeView(Context context, GenericDraweeHierarchy hierarchy) {
 ```
 &#8195;在DraweeHolder的setController()中，会为DraweeController设置其DraweeHierarchy，以建立起Drawee的MVC模型，并将调用attachController()连接控制器，并触发控制器的onAttach()来发送图像请求。
 随后会获取DraweeHierarchy的顶层图像作为显示图像，但由于图像请求结果还未到达，这里的getTopLevelDrawable()获取的可能只是占位图。
-######<font color = red>(2).直接创建一个DraweeController，并调用setController()设置到SimpleDraweeView中</font>
+#####(2).直接创建一个DraweeController，并调用setController()设置到SimpleDraweeView中
 &#8195;与(1)类似，不过用户可以直接定义和配置DraweeController，并直接设置到SimpleDraweeView中，来获取对图像数据的获取和加工的更多控制。
 
 #####4.DraweeController
@@ -133,18 +133,18 @@ public interface DraweeController {
 
 &#8195;AbstractDraweeController的核心业务模块有DraweeEventTracker、DeferredReleaser、Executor和可选模块RetryManager、GestureDetector、ControllerListener。
 ![](https://github.com/icemoonlol/fresco-research-stuff/blob/master/main-stuff/img/AbstractDraweeController_model.png)
-&#8195;AbstractDraweeController的构造方法，也是对如上模块进行初始化的过程。各个模块的作用如下：
-&#8195;(1).DraweeEventTracker：维护一个Event队列来记录控制器的控制操作(事件)
+&#8195;AbstractDraweeController的构造方法，也是对如上模块进行初始化的过程。各个模块的作用如下:   
+- DraweeEventTracker：维护一个Event队列来记录控制器的控制操作(事件)
 
-&#8195;(2).DeferredReleaser：管理DraweeController在断开与DraweeHierarchy连接后的资源释放工作。但值得一提的是，DraweeController对象<font color = red>使用的生命周期</font>并不是随着(DraweeController的)Detach事件到来而立刻结束的，这样会加重虚拟机对象创建和回收的开销。在DeferredReleaser在真正地将DraweeController所使用的资源释放(包括结束对所获取的图像的引用)前，若有新的DraweeController创建请求，则会重用”废弃的“DraweeController，将其以新的参数进行初始化后(Rebuild过程)返回给使用者，以避免对DraweeController繁重的创建和回收工作。
+- DeferredReleaser：管理DraweeController在断开与DraweeHierarchy连接后的资源释放工作。但值得一提的是，DraweeController对象<font color = red>使用的生命周期</font>并不是随着(DraweeController的)Detach事件到来而立刻结束的，这样会加重虚拟机对象创建和回收的开销。在DeferredReleaser在真正地将DraweeController所使用的资源释放(包括结束对所获取的图像的引用)前，若有新的DraweeController创建请求，则会重用”废弃的“DraweeController，将其以新的参数进行初始化后(Rebuild过程)返回给使用者，以避免对DraweeController繁重的创建和回收工作。
 
-&#8195;(3).Executor：Executor框架是Java 5引入的一系列并发库中与executor相关的类，包括线程池、Executor、Executors、ExecutorService、CompletionService、Future、Callable等。并发编程把任务拆分为若干个Runnable，然后在提交给一个Executor执行。Executor在执行时使用内部的线程池完成操作。当获取到图像的请求结果时，就会由Executor完成结果的分发工作。
+- Executor：Executor框架是Java 5引入的一系列并发库中与executor相关的类，包括线程池、Executor、Executors、ExecutorService、CompletionService、Future、Callable等。并发编程把任务拆分为若干个Runnable，然后在提交给一个Executor执行。Executor在执行时使用内部的线程池完成操作。当获取到图像的请求结果时，就会由Executor完成结果的分发工作。
 
-&#8195;(4).RetryManager：管理重试加载(重试加载使能/次数限制)
+- RetryManager：管理重试加载(重试加载使能/次数限制)
 
-&#8195;(5).GestureDetector：用来处理派发的TouchEvent
+- GestureDetector：用来处理派发的TouchEvent
 
-&#8195;(6).ControllerListener：用来对AbstractDraweeController进行调试和单元测试
+- ControllerListener：用来对AbstractDraweeController进行调试和单元测试
 
 #####6.PipelineDraweeController
 &#8195;在SimpleDraweeView的介绍中，我们看到，将会通过sDraweeControllerBuilderSupplier.get()获取一个DraweeController的建造者来创建DraweeController，sDraweeControllerBuilderSupplier是由Fresco在初始化Drawee时创建的PipelineDraweeControllerBuilderSupplier静态实例。
@@ -249,10 +249,7 @@ PipelineDraweeControllerBuilder builder = new PipelineDraweeControllerBuilder(
         callerContext);
   } 
 ```
-<font color = red><strong>
-&#8195;以上内容可以看做是一个系统常用的、用户可配置的复杂组件的实用构造方式：
-&#8195;由工厂Supplier/ProductFactory生产组件的建造者，由用户进行配置后，经工厂处理配置项来设定Product各个模块，最后生产组件Product。</strong>
-</font>
+<strong>&#8195;以上内容可以看做是一个系统常用的、用户可配置的复杂组件的实用构造方式：由工厂Supplier/ProductFactory生产组件的建造者，由用户进行配置后，经工厂处理配置项来设定Product各个模块，最后生产组件Product。</strong>
 
 &#8195;最后我们需要关注的是PipelineDraweeController的核心成员：一个提供请求图像数据源DataSource的Supplier，该成员将作为Drawee与ImagePipeline交互的接口。
 ```
@@ -327,8 +324,8 @@ protected void submitRequest() {
 &#8195;而返回请求失败时，将调用onFailureImpl()并返回失败原因。
 &#8195;当加载进度更新时，会调用onProgressUpdate()进行进度条的更新。
 
-下面看一下Drawee收到货物后是如何处理的：
-(1).onNewResultInternal()：
+&#8195;下面看一下Drawee收到货物后是如何处理的：   
+&#8195;(1).onNewResultInternal()：
 ```
 // ...
 // create drawable
@@ -375,8 +372,8 @@ protected void submitRequest() {
     }
     
 ```
-以上是获取到新的返回值时的处理，其中isFinished为false的情况支持了渐进式图片加载。
-(2).onFailureInternal()：
+&#8195;以上是获取到新的返回值时的处理，其中isFinished为false的情况支持了渐进式图片加载。   
+&#8195;(2).onFailureInternal()：
 ```
  if (isFinished) {
       logMessageAndFailure("final_failed @ onFailure", throwable);
@@ -398,12 +395,12 @@ protected void submitRequest() {
       // IMPORTANT: do not execute any instance-specific code after this point
     }
 ```
-失败的处理根据设置有不同的处理方式：
-	a.维持上次图片内容显示
-    b.重试处理
-    c.加载失败处理
-    
-此外AbstractDraweeController实现了GestureDetector.ClickListener的onClick接口，在当用户点击图片时，会请求重试加载图片。
+&#8195;失败的处理根据设置有不同的处理方式：
+&#8195;a.维持上次图片内容显示
+&#8195;b.重试处理
+&#8195;c.加载失败处理
+
+&#8195;此外AbstractDraweeController实现了GestureDetector.ClickListener的onClick接口，在当用户点击图片时，会请求重试加载图片。
 ```
   public boolean onClick() {
     if (shouldRetryOnTap()) {
