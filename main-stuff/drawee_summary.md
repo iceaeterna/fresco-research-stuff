@@ -322,12 +322,12 @@ protected void submitRequest() {
     mDataSource.subscribe(dataSubscriber, mUiThreadImmediateExecutor);
   }
 ```
-&#8195;对图像内容的获取过程可能是缓慢的，这个过程可以想象成你向代理商订购一件货物，并留下电话号码，代理商从工厂拿到货物后会打电话通知你。这个代理商就是DataSource，电话号码就是DataSubscriber。
+&#8195;对图像内容的获取过程可能是缓慢的，这个过程可以想象成你向代理商订购一件货物，并留下电话号码，代理商从工厂拿到货物后会打电话通知你。这个代理商就是DataSource，电话号码就是DataSubscriber。这就是Drawee所使用的[订阅发布模型](https://github.com/icemoonlol/fresco-research-stuff/blob/master/main-stuff/drawee-research-stuff/Observer%20Pattern.md)。
 &#8195;当获取到新的返回值时，若返回结果不为空，即可获取订阅的图像数据，否则，若本次订阅结束仍没有获取订阅内容，则本次请求失败。
 &#8195;而返回请求失败时，将调用onFailureImpl()并返回失败原因。
 &#8195;当加载进度更新时，会调用onProgressUpdate()进行进度条的更新。
 
-下面看一下Drawee拿到货后是如何处理的：
+下面看一下Drawee收到货物后是如何处理的：
 (1).onNewResultInternal()：
 ```
 // ...

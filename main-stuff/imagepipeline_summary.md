@@ -189,4 +189,221 @@ public class ImagePipelineFactory {
     }
   }
 ```
-关于流水线配置的部分参考
+关于流水线配置的部分参考[流水线配置](http://)
+#####(2).ImagePipeline图片请求配置
+&#8195;在配置完流水线后，ImagePipeline将会发起图片请求，并把图片请求和处理的工作交给流水线完成。
+```
+  private <T> DataSource<CloseableReference<T>> submitFetchRequest(
+      Producer<CloseableReference<T>> producerSequence,
+      ImageRequest imageRequest,
+      ImageRequest.RequestLevel lowestPermittedRequestLevelOnSubmit,
+      Object callerContext) {
+    try {
+      ImageRequest.RequestLevel lowestPermittedRequestLevel =
+          ImageRequest.RequestLevel.getMax(
+              imageRequest.getLowestPermittedRequestLevel(),
+              lowestPermittedRequestLevelOnSubmit);
+      SettableProducerContext settableProducerContext = new SettableProducerContext(
+          imageRequest,
+          generateUniqueFutureId(),
+          mRequestListener,
+          callerContext,
+          lowestPermittedRequestLevel,
+        /* isPrefetch */ false,
+          imageRequest.getProgressiveRenderingEnabled() ||
+              !UriUtil.isNetworkUri(imageRequest.getSourceUri()),
+          imageRequest.getPriority());
+      return CloseableProducerToDataSourceAdapter.create(
+          producerSequence,
+          settableProducerContext,
+          mRequestListener);
+    } catch (Exception exception) {
+      return DataSources.immediateFailedDataSource(exception);
+    }
+  }
+```
+其中，用户可以设置图片请求的获取深度，以控制图片的加载响应速度，而在提交请求前，也会根据用户设置的获取深度来计算本次图片获取的最大深度。最后把图片请求ImageRequest、请求会话ID、调用上下文、请求深度、请求优先级封装在ProducerContext中，并以其和配置好的流水线构造DataSource并发起工作。
+#####(3).ImagePipeline工作发起
+&#8195;紧接着上面的内容，CloseableProducerToDataSourceAdapter的create()方法实际上只是根据传入的配置好的流水线(生产者)、生产上下文、Request监听器来构造一个CloseableProducerToDataSourceAdapter对象
+```
+public static <T> DataSource<CloseableReference<T>> create(
+      Producer<CloseableReference<T>> producer,
+      SettableProducerContext settableProducerContext,
+      RequestListener listener) {
+    return new CloseableProducerToDataSourceAdapter<T>(
+        producer, settableProducerContext, listener);
+  }
+```
+&#8195;在AbstractProducerToDataSourceAdapter的构造方法中，创建了一个本次图像资源请求的消费者，并将其和生产上下文传递给生产者(流水线)生产结果，于是图片请求和处理的工作被提交到流水线开始执行。
+```
+  protected AbstractProducerToDataSourceAdapter(
+      Producer<T> producer,
+      SettableProducerContext settableProducerContext,
+      RequestListener requestListener) {
+    mSettableProducerContext = settableProducerContext;
+    mRequestListener = requestListener;
+    mRequestListener.onRequestStart(
+        settableProducerContext.getImageRequest(),
+        mSettableProducerContext.getCallerContext(),
+        mSettableProducerContext.getId(),
+        mSettableProducerContext.isPrefetch());
+    producer.produceResults(createConsumer(), settableProducerContext);
+  }
+
+```
+&#8195;那么消费者是什么？
+```
+public interface Consumer<T> {
+  /**
+   * 当有新数据产生时由生产者调用。 该方法不应抛出任何异常。
+   * 注意，返回结果可能是可关闭引用，为了有效管理内容使用，生产者在onNewResult调用后会关闭该引用，如果想在onNewResult之后还想要获取返回结果，消费者就必须创建返回资源的副本。
+   * @param newResult 
+   * @param isLast 当这是最终结果时为true
+   */
+  void onNewResult(T newResult, boolean isLast);
+
+  void onFailure(Throwable t);
+
+  void onCancellation();
+
+  /**
+   * 当生产进度更新时调用
+   * @param progress 范围为[0, 1]
+   */
+  void onProgressUpdate(float progress);
+}
+```
+&#8195;消费者的实现基类为BaseConsumer。值得一提的是，BaseConsumer是线程安全的(ThreadSafe)，所有回调方法均是synchronized的，这样客户端就可以认为所有的回调都发生在同一个线程中。并且BaseConsumer对回调发生的异常会记录。不会出现Producer的多个工作线程同时调用Consumer的回调方法的情况，而避免对DataSource状态的操作冲突。
+&#8195;CloseableProducerToDataSourceAdapter的createConsumer()所创建的Consumer触发了RequestListener的回调，并当有新结果或状态返回时会调用setResult()/setFailure()/setProgress()方法来设置结果的内容和状态(对于Jpeg图片来说返回的可能是中间结果)。
+#####(4).ImagePipeline结果处理
+&#8195;CloseableProducerToDataSourceAdapter作为DataSource的实现类，继承自抽象基类AbstractDataSource，并维护了图片请求的结果和状态。当新结果返回时，就会调用setResult()来设置新结果的内容和状态，而用户调用getResult()则可以获取该结果。
+&#8195;由之前分析可知，Drawee和DataSource之间是通过订阅发布模型来完成图片的请求和结果的获取的。那么让我们来了解一下其订阅发布模型是如何实现的。
+AbstractDataSource的成员如下：
+```
+  private DataSourceStatus mDataSourceStatus;
+  @GuardedBy("this")
+  private boolean mIsClosed;
+  @GuardedBy("this")
+  private @Nullable T mResult = null;
+  @GuardedBy("this")
+  private Throwable mFailureThrowable = null;
+  @GuardedBy("this")
+  private float mProgress = 0;
+  private final ConcurrentLinkedQueue<Pair<DataSubscriber<T>, Executor>> mSubscribers;
+```
+&#8195;AbstractDataSource通过mResult维护对图片请求结果的引用，通过mProgress和mDataSourceStatus、mIsClosed维护图片请求结果的进度和状态，通过mSubscribers维护订阅者队列(使用队列可以保证订阅内容的有序发送)。
+#####订阅：
+&#8195;在DraweeController的onAttach()方法中，将会创建一个DataSubscriber对象，并向DataSource注册订阅者：
+```
+  public void subscribe(final DataSubscriber<T> dataSubscriber, final Executor executor) {
+    Preconditions.checkNotNull(dataSubscriber);
+    Preconditions.checkNotNull(executor);
+    boolean shouldNotify;
+
+    synchronized(this) {
+      if (mIsClosed) {
+        return;
+      }
+
+      if (mDataSourceStatus == DataSourceStatus.IN_PROGRESS) {
+        mSubscribers.add(Pair.create(dataSubscriber, executor));
+      }
+
+      shouldNotify = hasResult() || isFinished() || wasCancelled();
+    }
+
+    if (shouldNotify) {
+      notifyDataSubscriber(dataSubscriber, executor, hasFailed(), wasCancelled());
+    }
+  }
+```
+&#8195;若DataSource已经获取到结果(无论成功还是失败)将直接返回不用注册
+#####发布：
+&#8195;DataSource提供了setResult()、setFailure()、setProgress()的protected方法用于更新DataSource状态，并调用notifyDataSubscribers()通知所有订阅者。以setResult()为例：
+```
+    protected boolean setFailure(Throwable throwable) {
+    boolean result = setFailureInternal(throwable);
+    if (result) {
+      notifyDataSubscribers();
+    }
+    return result;
+    }
+  
+    private boolean setResultInternal(@Nullable T value, boolean isLast) {
+    T resultToClose = null;
+    try {
+      synchronized (this) {
+        if (mIsClosed || mDataSourceStatus != DataSourceStatus.IN_PROGRESS) {
+          resultToClose = value;
+          return false;
+        } else {
+          if (isLast) {
+            mDataSourceStatus = DataSourceStatus.SUCCESS;
+            mProgress = 1;
+          }
+          if (mResult != value) {
+            resultToClose = mResult;
+            mResult = value;
+          }
+          return true;
+        }
+      }
+    } finally {
+      if (resultToClose != null) {
+        closeResult(resultToClose);
+      }
+    }
+    }
+```
+&#8195;setResultInternal会根据返回结果来设置DataSource状态以及图片请求的内容和进度。
+&#8195;notifyDataSubscribers()将遍历订阅者队列，并依次发送消息。
+```
+  private void notifyDataSubscribers() {
+    final boolean isFailure = hasFailed();
+    final boolean isCancellation = wasCancelled();
+    for (Pair<DataSubscriber<T>, Executor> pair : mSubscribers) {
+      notifyDataSubscriber(pair.first, pair.second, isFailure, isCancellation);
+    }
+  }
+```
+&#8195;向订阅者发送订阅内容的任务在notifyDataSubscriber()方法中实现：
+```
+ private void notifyDataSubscriber(
+      final DataSubscriber<T> dataSubscriber,
+      final Executor executor,
+      final boolean isFailure,
+      final boolean isCancellation) {
+    executor.execute(
+        new Runnable() {
+          @Override
+          public void run() {
+            if (isFailure) {
+              dataSubscriber.onFailure(AbstractDataSource.this);
+            } else if (isCancellation) {
+              dataSubscriber.onCancellation(AbstractDataSource.this);
+            } else {
+              dataSubscriber.onNewResult(AbstractDataSource.this);
+            }
+          }
+        });
+  }
+```
+&#8195;实际上是让工作线程触发DataSubscriber的回调以通知DataSource的最新状态。就像代理商打给订购者电话告知他”你的货到了“，”你的货订购失败“，”你的订购请求因为一些原因被取消了“。
+
+
+&#8195;回顾下DraweeView请求数据的流程：
+- step1.在DraweeController的创建过程中，获取DataSourceSupplier对象，DataSourceSupplier的生产方法get()将调用ImagePipeline成员的fetchDecodedImage/fetchImageFromBitmapCache成员方法
+
+- step2.ImagePipeline将为对应的ImageRequest配置获取所需图像的流水线
+
+- step3.创建一个消费者用来发起回调，并将消费者、上下文一并交由流水线(生产者)生产所需图像
+
+- step4.生产者的工作线程通过消费者发起回调来处理生产结果
+
+- step5.DraweeController的onAttach()会触发submitRequest向DataSource注册DataSubscriber来订阅DataSource状态，若DataSource已经获取到结果(无论成功还是失败)将直接返回不用注册。
+
+- step6.获取结果或状态的变化将由DataSource分发给所有订阅者
+
+- step7.DraweeController获取订阅结果后，将成功的返回结果设置到图层予以显示
+
+注：用户可以直接使用BaseDataSubscriber向DataSource注册订阅者，所以同一图片请求可能有多个订阅者。(而控制器是和DraweeHierarchy、DraweeView一一对应的MVC模型，不会把同一个DraweeController设置到多个Model中去，这一点从setController()中也可以看出)
