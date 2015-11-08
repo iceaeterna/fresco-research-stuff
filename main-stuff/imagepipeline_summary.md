@@ -72,7 +72,7 @@ public class ImagePipelineFactory {
 - mAnimatedImageFactory：动态图片处理工厂
 - mBitmapMemoryCacheParamsSupplier：提供Bitmap缓冲的配置参数
 - mCacheKeyFactory：用于产生ImagePipeline各层缓冲的缓冲键
-- ~~mDownsampleEnabled：是否下载样例图片~~
+- mDownsampleEnabled：是否降低图片采样率
 - mEncodedMemoryCacheParamsSupplier:提供未解码图像缓冲的配置参数
 - mExecutorSupplier：用于提供下载、解码等工作线程池
 - mImageCacheStatsTracker：用于记录缓存统计信息
