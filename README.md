@@ -10,9 +10,9 @@
   __DraweeHierarchy（业务逻辑层）:__
   负责组织和维护Drawee的图层，以设置图像的显示效果，如占位图、圆角等。
   
-  本系列内容主要分析默认配置下，Fresco的业务逻辑实现过程，分析和探讨的重点在于实现过程中所使用的设计架构、设计模式、技术细节。
-  ##目录
-  #####说明
+  本系列内容主要分析默认配置下，Fresco的业务逻辑实现过程，分析和探讨的重点在于实现过程中所使用的设计架构、设计模式、技术细节。   
+##目录   
+#####说明   
   在阅读本系列内容之前，应当参考[fresco-doc-cn](http://fresco-cn.org/docs/concepts.html#_)了解fresco的基本特性和基本使用方法，以对fresco的分析有着更深的理解和体会。此外，如果有兴趣，不妨可以对比[Android-Universal-Image-Loader](https://github.com/nostra13/Android-Universal-Image-Loader)的技术实现来学习。
 #####一、Drawee的基本框架与业务实现
 #####二、ImagePipeline工作过程
