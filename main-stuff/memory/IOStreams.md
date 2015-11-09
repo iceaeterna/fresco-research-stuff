@@ -65,16 +65,15 @@ NativePooledByteBufferOutputStream是将指定内容写到Native内存中，而�
 ```
 在构造方法中可以看到，NativePooledByteBufferOutputStream的创建会尝试获取一块Native内存，所有对NativePooledByteBufferOutputStream的操作均是在该块Native内存上进行的。   
 我们需要关注的是如下方法的实现：   
-
-(1). 把NativePooledByteBufferOutputStream所获取并打开的Native内存封装为一块NativePooledByteBuffer。
+#####1.转化为NativePooledByteBuffer
+把NativePooledByteBufferOutputStream所获取并打开的Native内存封装为一块NativePooledByteBuffer。
 ```
   public NativePooledByteBuffer toByteBuffer() {
     ensureValid();
     return new NativePooledByteBuffer(mBufRef, mCount);
   }
 ```
-
-(2). 向Native内存中写入字符数组指定偏移和长度的内容
+#####2.向Native内存中写入字符数组指定偏移和长度的内容
 ```
   public void write(byte[] buffer, int offset, int count) throws IOException {
     if (offset < 0 || count < 0 || offset + count > buffer.length) {
@@ -115,8 +114,7 @@ ___
   }
 ```
 PooledByteBufferInputStream所提供的读的操作接口有：   
-
-(1). 读取一个字节的内容
+#####1.读取一个字节的内容
 ```
   public int read() {
     if (available() <= 0) {
@@ -125,15 +123,13 @@ PooledByteBufferInputStream所提供的读的操作接口有：
     return ((int) mPooledByteBuffer.read(mOffset++))  & 0xFF;
   }
 ```
-
-(2). 读取内容到字节数组buffer中
+#####2.读取内容到字节数组buffer中
 ```
   public int read(byte[] buffer) {
     return read(buffer, 0, buffer.length);
   }
 ```
-
-(3). 读取从指定偏移位置开始指定大小的内容到字节数组buffer中
+#####3.读取从指定偏移位置开始指定大小的内容到字节数组buffer中
 ```
   public int read(byte[] buffer, int offset, int length) {
     if (offset < 0 || length < 0 || offset + length > buffer.length) {
@@ -158,8 +154,7 @@ PooledByteBufferInputStream所提供的读的操作接口有：
     return numToRead;
   }
 ```
-
-(4). 读指针跳过指定的字节大小
+#####4.读指针跳过指定的字节大小
 ```
   public long skip(long byteCount) {
     Preconditions.checkArgument(byteCount >= 0);
@@ -168,8 +163,7 @@ PooledByteBufferInputStream所提供的读的操作接口有：
     return skipped;
   }
 ```
-
-(5). 设置标记位置
+#####5.设置标记位置
 ```
   public void mark(int readlimit) {
     mMark = mOffset;
@@ -181,3 +175,5 @@ PooledByteBufferInputStream所提供的读的操作接口有：
     mOffset = mMark;
   }
 ```
+
+[返回PoolFactory](https://github.com/icemoonlol/fresco-research-stuff/blob/master/main-stuff/memory/PoolFactory.md)

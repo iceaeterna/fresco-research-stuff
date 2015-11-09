@@ -8,7 +8,7 @@
       return;
     }
 ```
-2.如果设置了磁盘缓冲，那么有一个问题需要考虑到，就是磁盘的读写操作比较耗时，对磁盘的操作必须是异步任务，同时需要对磁盘读写进行同步控制，以避免读写冲突。对Cache项的查找操作是通过Bolts框架的Task/Continuation完成的:
+2.如果设置了磁盘缓冲，那么有一个问题需要考虑到，就是磁盘的读写操作比较耗时，对磁盘的操作必须是异步任务，同时需要对磁盘读写进行同步控制，以避免读写冲突。对Cache项的查找操作是通过[Bolts框架的Task/Continuation](https://github.com/icemoonlol/fresco-research-stuff/blob/master/main-stuff/researching_stuffs/imagepipeline_research_stuff/TaskContinuation.md)完成的:
 ```
     AtomicBoolean isCancelled = new AtomicBoolean(false);
     final Task<EncodedImage> diskCacheLookupTask =
@@ -63,3 +63,5 @@ DiskCacheConsumer的onNewResultImpl与其他缓存一样，当新结果返回时
       getConsumer().onNewResult(newResult, isLast);
     }
 ```
+
+[返回ProducerSequence](https://github.com/icemoonlol/fresco-research-stuff/blob/master/main-stuff/imagepipeline/producer_sequence.md)[](http://)

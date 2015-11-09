@@ -45,3 +45,5 @@ public void onNewResultImpl(EncodedImage newResult, boolean isLast) {
           getConsumer().onNewResult(newResult, true);
         }
 ```
+
+[返回ProducerSequence](https://github.com/icemoonlol/fresco-research-stuff/blob/master/main-stuff/imagepipeline/producer_sequence.md)

@@ -30,7 +30,7 @@
 ```
 
 #####InstrumentedMemoryCache
-&#8195;InstrumentedMemoryCache实现了MemoryCache，它包括一个物理意义上的缓存和一个用来追踪缓存行为(如缓存命中)的Tracker。
+&#8195;InstrumentedMemoryCache实现了MemoryCache，它包括一个物理意义上的缓存CountingMemoryCache和一个用来追踪缓存行为(如缓存命中)的Tracker。
 ```
   private final MemoryCache<K, V> mDelegate;
   private final MemoryCacheTracker mTracker;
@@ -76,5 +76,4 @@
     return mDelegate.contains(predicate);
   }
 ```
-
-[返回cache_summary](https://github.com/icemoonlol/fresco-research-stuff/blob/master/main-stuff/cache_summary.md)
+[CountingMemoryCache部分](https://github.com/icemoonlol/fresco-research-stuff/blob/master/main-stuff/cache/CountingMemoryCache.md)

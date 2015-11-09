@@ -77,3 +77,5 @@
   }
 ```
 &#8195;notifyConsumer()将**根据Native输出流构造的Native内存字节缓冲块构造一个EncodedImage返回给Consumer**
+
+[返回ProducerSequence](https://github.com/icemoonlol/fresco-research-stuff/blob/master/main-stuff/imagepipeline/producer_sequence.md)
