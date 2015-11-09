@@ -95,3 +95,39 @@ public void copy(
   }
 ```
 其中，因为必须对Native内存块进行同步控制，以防止多线程下对内存块的访问冲突，而Copy操作需要同时同步源内存块和目标内存块，在等待源内存块和目标内存块锁的过程中有可能发生死锁，比如线程1发起Copy A to B，线程2发起Copy B to C，线程3发起Copy C to A，那么当线程1可能获取了A的锁，线程2可能获取了B的锁，线程3可能获取了C的锁，但各自无法获取另一个内存块的锁而将造成死锁。++**这里的解决方法是按低地址到高地址获取锁，并且必须一次性申请所有锁资源，即有序资源分配法，来破坏死锁产生的环路条件。**++
+
+#####扩展阅读
+native内存的操作并不复杂，如nativeAllocate()只是调用了malloc()尝试分配内存并返回jlong指针
+```
+static jlong NativeMemoryChunk_nativeAllocate(
+    JNIEnv* env,
+    jclass clzz,
+    jint size) {
+  UNUSED(clzz);
+  void* pointer = malloc(size);
+  if (!pointer) {
+    (*env)->ThrowNew(env, jRuntimeException_class, "could not allocate memory");
+    return 0;
+  }
+  return PTR_TO_JLONG(pointer);
+}
+```
+此外，NativeMemoryChunk_nativeFree、NativeMemoryChunk_nativeMemcpy分别使用free()和memcpy()来进行内存的释放和拷贝，NativeMemoryChunk_nativeReadByte将返回内存块的jlong指针。
+所不同的是与Java字节数组相关的读写操作需要借助JNIEnv的SetByteArrayRegion和GetByteArrayRegion调用来实现。
+```
+static void NativeMemoryChunk_nativeCopyToByteArray(
+    JNIEnv* env,
+    jclass clzz,
+    jlong lpointer,
+    jbyteArray byteArray,
+    jint offset,
+    jint count) {
+  UNUSED(clzz);
+  (*env)->SetByteArrayRegion(
+      env,
+      byteArray,
+      offset,
+      count,
+      JLONG_TO_PTR(lpointer));
+}
+```

@@ -1,6 +1,6 @@
-##BitmapMemoryCache
-#####BitmapMemoryCacheFactory
-&#8195;BitmapMemoryCache是通过工厂模式创建的。**++BitmapMemoryCacheFactory将实际的Cache向传入的ImageCacheStatsTracker注册后，创建了一个MemoryStatsTracker用来追踪缓存行为，当缓存发生了命中、丢失、新缓存项设置事件，将触发ImageCacheStatsTracker的回调++**。
+##Bitmap(Encoded)MemoryCache
+#####Bitmap(Encoded)MemoryCacheFactory
+&#8195;BitmapMemoryCache(EncodedMemoryCache)是通过工厂模式创建的。**++BitmapMemoryCacheFactory将实际的Cache向传入的ImageCacheStatsTracker注册后，创建了一个MemoryStatsTracker用来追踪缓存行为，当缓存发生了命中、丢失、新缓存项设置事件，将触发ImageCacheStatsTracker的回调++**。
 ```
   public static MemoryCache<CacheKey, CloseableImage> get(
     final CountingMemoryCache<CacheKey, CloseableImage> bitmapCountingMemoryCache,

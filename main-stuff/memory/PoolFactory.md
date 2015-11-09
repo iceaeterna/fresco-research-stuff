@@ -57,7 +57,10 @@ ___
   }
 ```
 ___
-PooledByteBuffer分别依赖NativeMemoryChunkPool来获取Native内存块，依赖PooledByteStreams来完成与Java层的IO交互。后面我们分别将探讨NativeMemoryChunkPool和PooledByteStreams的实现。
+PooledByteBuffer分别依赖NativeMemoryChunkPool来获取Native内存块，依赖PooledByteStreams和Native I/O流来完成与用户打开的IO流的读写交互。后面我们分别将探讨NativeMemoryChunkPool和PooledByteStreams的实现。
 - [NativeMemoryChunkPool](http://)
-- [PooledByteStreams](http://)
+- [I/O Streams](http://)
+
+在了解完Fresco是如何获取和管理Native内存，以及是如何对Native内存进行读写后，我们来看NativePooledByteBuffer的创建和使用：    
+- [NativePooledByteBuffer](http://)
 
