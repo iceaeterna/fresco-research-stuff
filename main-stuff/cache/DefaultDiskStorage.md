@@ -33,8 +33,8 @@
   }
 ```
 &#8195;可以由DiskCacheConfig配置磁盘缓存文件的根目录，并且在根目录下为该缓存文件系统的版本目录。此外，需要注意的是，由于三星的根目录系统在13次创建失败后会产生bug，所以当版本变化而导致目录不匹配时，将销毁原版本目录下的所有内容，并创建新的版本目录。   
-&#8195;接下来看DefaultDiskStorage是如何创建和操作资源文件的：
-1. createTemporary()：创建临时资源文件   
+&#8195;接下来看DefaultDiskStorage是如何创建和操作资源文件的：   
+#####1. createTemporary()：创建临时资源文件
 &#8195;**临时资源文件将以ResourceId的编码值为基础散列到各个文件分区中(这里设置了100个文件分区)，这样可以通过资源ID编码均匀散列图片资源文件到各个子目录，以加快查找速度和解决碰撞问题，**注意这里的临时文件暂时是没有任何内容的。
 ```
   public FileBinaryResource createTemporary(
@@ -57,7 +57,7 @@
   }
 ```
 
-2. updateResource()：图像写入文件   
+#####2. updateResource()：图像写入文件
 (1).打开临时文件的文件输出流
 ```
     FileBinaryResource fileBinaryResource = (FileBinaryResource)resource;
@@ -85,7 +85,7 @@
       throw new IncompleteFileException(length, file.length());
     }
 ```
-3. commit()：保存资源文件   
+#####3. commit()：保存资源文件
 (1).创建一个Content类型的资源文件(.cnt)，并将临时文件重命名为该资源文件。Fresco对图像资源的缓存使用了临时文件，这样可以更好地将临时文件均匀散列到各个子目录下。
 ```
     FileBinaryResource tempFileResource = (FileBinaryResource) temporary;
@@ -98,7 +98,7 @@
 其中getContentFileFor()是返回对应的散列目录下对应文件的File对象。
 (2).出错处理，最后更新资源文件的最近修改时间。
 
-4. 查询资源文件：   
+#####4. 查询资源文件：
 &#8195;对于触及性查询，在查询到结果后，会更新资源文件的最近被修改时间
 ```
   @Override
@@ -118,7 +118,7 @@
     return exists;
   }
 ```
-5. 获取资源内容：   
+#####5. 获取资源内容：   
 &#8195;在查询到结果后，会更新资源文件的最近被修改时间
 ```
   @Override

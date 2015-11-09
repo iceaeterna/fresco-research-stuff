@@ -76,7 +76,7 @@ Native OutputStream会通过NativeMemoryChunkPool申请一块Native内存，而�
 ###NativePooledByteBuffer
 NativePooledByteBuffer实现了PooledByteBuffer，仅提供了读接口，对NativePooledByteBuffer的写工作将由NativePooledByteBufferOutputStream向Native内存写入，以实现对Native内容的保护，防止用户对Native内容的冲突读写操作。
 
-1. 读取指定偏移处字节
+#####1. 读取指定偏移处字节
 ```
   @Override
   public synchronized byte read(int offset) {
@@ -87,7 +87,7 @@ NativePooledByteBuffer实现了PooledByteBuffer，仅提供了读接口，对Nat
   }
 ```
 
-2. 读取指定偏移和长度的内容到字节缓冲中
+#####2. 读取指定偏移和长度的内容到字节缓冲中
 ```
   @Override
   public synchronized void read(int offset, byte[] buffer, int bufferOffset, int length) {

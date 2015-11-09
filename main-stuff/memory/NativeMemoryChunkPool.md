@@ -31,7 +31,7 @@ ___
 - mInUseLength：当前被使用的资源数
 
 我们看看对Bucket作为分池是如何对同类资源进行组织和管理的：   
-1. 空闲资源的获取   
+#####1. 空闲资源的获取   
 (1).调用Bucket的get()将尝试获取空闲资源，若获取成功，则更新被使用资源计数
 ```
   public V get() {
@@ -48,7 +48,7 @@ ___
     return (V) mFreeList.poll();
   }
 ```   
-2.占用资源的释放   
+#####2. 占用资源的释放   
 (1).调用Bucket的release()将释放被占用资源，并更新被使用资源计数
 ```
   public void release(V value) {
@@ -119,7 +119,7 @@ mFree、mUsed分别用来记录空闲块和被使用块的块数和大小信息�
 initBuckets()使用指定的资源池参数来初始化资源池所拥有的各个子池的资源大小，以传入的一个SparseIntArray来初始化对应大小资源的当前使用量。在资源池构造方法中，资源池各个子池资源的使用量均为0。   
 #####资源池的使用和管理
 
-1. 当有新的资源请求到来时，将调用get(int size)方法尝试获取空闲资源。   
+#####1. 当有新的资源请求到来时，将调用get(int size)方法尝试获取空闲资源。   
 (1).首先要保证资源池的总大小小于软上限，随后根据申请的资源大小，由具体的资源池实现类来计算适合该资源的整块资源大小(资源块的对齐只能由具体资源池来决定)。
 ```
     ensurePoolSizeInvariant();
@@ -188,7 +188,8 @@ initBuckets()使用指定的资源池参数来初始化资源池所拥有的各�
     }
     return value;
 ```
-2. 当应用程序使用完资源后，将调用release()释放资源，之前分析到，Bucket资源队列设置了空闲资源的个数上限，若多个应用程序创建并使用同一种资源，那么使用完后，会尝试将该资源放到空闲资源队列中，但是若资源个数超出上限，那么将立刻释放该资源。   
+#####2. 当应用程序使用完资源后，将调用release()释放资源   
+之前分析到，Bucket资源队列设置了空闲资源的个数上限，若多个应用程序创建并使用同一种资源，那么使用完后，会尝试将该资源放到空闲资源队列中，但是若资源个数超出上限，那么将立刻释放该资源。   
 release()首先将获取该资源对应的Bucket:
 ```
     final int bucketedSize = getBucketedSizeForValue(value);
@@ -235,7 +236,7 @@ release()首先将获取该资源对应的Bucket:
 
 #####资源池内存用量的裁剪
 资源池裁剪与其他缓冲类似，分为一般情况下的trimToSize()，即裁剪到合适大小，以及极端情况下的trimToNothing()，即完全清空。   
-1. 定额裁剪(trimToSize)：   
+#####1. 定额裁剪(trimToSize)：   
 (1).裁剪量的计算，若已使用的空间大小大于目标大小，那么，应裁剪到已使用空间的大小，否则，裁剪到目标大小。
 ```
     int bytesToFree = Math.min(mUsed.mNumBytes + mFree.mNumBytes - targetSize, mFree.mNumBytes);
@@ -263,7 +264,7 @@ release()首先将获取该资源对应的Bucket:
     }
 ```
 
-2. 全额裁剪(trimToNothing)：   
+#####2. 全额裁剪(trimToNothing)：   
 (1).需要进行裁剪的Bucket是空闲资源队列不为空的Bucket，并且将其资源大小和正在被使用的资源个数保存在inUseCounts以进行资源池的重置(空闲资源全额裁剪的不变信息需要保留下来)。
 ```
     final List<Bucket<V>> bucketsToTrim = new ArrayList<>(mBuckets.size());
@@ -344,7 +345,7 @@ maxMemory为虚拟机能从系统中获取内存最大大小。硬上线则比�
 ```   
 下面关注NativeMemoryChunkPool的关于内存块的一些业务实现：   
 
-1. 寻找最小的可以满足申请内存大小的内存块大小
+#####1. 寻找最小的可以满足申请内存大小的内存块大小
 ```
   protected int getBucketedSize(int requestSize) {
     int intRequestSize = requestSize;
@@ -363,14 +364,14 @@ maxMemory为虚拟机能从系统中获取内存最大大小。硬上线则比�
   }
 ```
 
-2. Native内存块分配将创建一个新的NativeMemoryChunk对象
+#####2. Native内存块分配将创建一个新的NativeMemoryChunk对象
 ```
   protected NativeMemoryChunk alloc(int bucketedSize) {
     return new NativeMemoryChunk(bucketedSize);
   }
 ```
 
-3. Native内存块释放
+#####3. Native内存块释放
 ```
   protected void free(NativeMemoryChunk value) {
     Preconditions.checkNotNull(value);

@@ -40,8 +40,8 @@
     mTracker = tracker;
   }
 ```
-&#8195;InstrumentedMemoryCache实现了MemoryCache的对缓存的操作接口：
-1. 获取缓存键对应的值，并记录命中或丢失事件
+&#8195;InstrumentedMemoryCache实现了MemoryCache的对缓存的操作接口：   
+#####1. 获取缓存键对应的值，并记录命中或丢失事件
 ```
   @Override
   public CloseableReference<V> get(K key) {
@@ -54,7 +54,7 @@
     return result;
   }
 ```
-2. 缓存键值对，并记录缓存事件
+#####2. 缓存键值对，并记录缓存事件
 ```
   @Override
   public CloseableReference<V> cache(K key, CloseableReference<V> value) {
@@ -62,14 +62,14 @@
     return mDelegate.cache(key, value);
   }
 ```
-3. 移除给定描述的所有缓存项
+#####3. 移除给定描述的所有缓存项
 ```
   @Override
   public int removeAll(Predicate<K> predicate) {
     return mDelegate.removeAll(predicate);
   }
 ```
-4. 查找是否存在给定描述的缓存项
+#####4. 查找是否存在给定描述的缓存项
 ```
   @Override
   public boolean contains(Predicate<K> predicate) {
@@ -77,3 +77,4 @@
   }
 ```
 
+[返回cache_summary](https://github.com/icemoonlol/fresco-research-stuff/blob/master/main-stuff/cache_summary.md)

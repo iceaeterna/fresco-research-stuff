@@ -1,8 +1,5 @@
 ##二、ImagePipeline工作过程
 
-[TOC]
-
-
 ###ImagePipeline简介
 > > 下面关于ImagePipeline的描述引自http://fresco-cn.org/docs/configure-image-pipeline.html#_：   
 Image pipeline 负责完成加载图像，变成Android设备可呈现的形式所要做的每个事情。   
@@ -145,7 +142,7 @@ public class ImagePipelineFactory {
 ```
 &#8195;两者均为配置图像生成的获取和加工流水线之后，提交获取请求。区别在于fetchImageFromBitmapCache获取图片的获取深度为仅从BitmapCache中查找，fetchDecodedImage则会在按序在所有Cache中查找，若查找失败则根据Uri从网络或本地等来源获取。fetchImageFromBitmapCache适用于需要快速显示的应用场景，如果没有在较短的时间内获取到图片，就不进行显示。
 ####1.ImagePipeline流水线配置
-&#8195;由于Uri来源、获取方式、处理方式的不同，并且可能设置有不同的图片的加工处理场景，所以需要根据Uri类型和用户设置来组装不同的流水线用于目标图片的获取和处理。
+&#8195;由于Uri来源、获取方式、处理方式的不同，并且可能设置有不同的图片的加工处理场景，所以需要根据Uri类型和用户设置来组装不同的流水线用于目标图片的获取和处理。   
 &#8195;那么我们看下getBasicDecodedImageSequence()：
 ```
   public Producer<CloseableReference<CloseableImage>> getDecodedImageProducerSequence(
@@ -159,8 +156,7 @@ public class ImagePipelineFactory {
     }
   }
 ```
-&#8195;getDecodedImageProducerSequence()处理了用户设置了图片后处理器的情况，用户可以定义[后处理器](http://fresco-cn.org/docs/modifying-image.html#_)来实现一些对于图片的处理工作。
-
+&#8195;getDecodedImageProducerSequence()处理了用户设置了图片后处理器的情况，用户可以定义[后处理器](http://fresco-cn.org/docs/modifying-image.html#_)来实现一些对于图片的处理工作。   
 &#8195;getBasicDecodedImageSequence()则会根据Uri的类别对不同来源和类型的图像配置不同的流水线。
 ```
  private Producer<CloseableReference<CloseableImage>> getBasicDecodedImageSequence(

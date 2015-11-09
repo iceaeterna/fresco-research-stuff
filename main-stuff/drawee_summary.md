@@ -111,7 +111,7 @@ DraweeController的默认建造方式下，只是简单地设置了CallerContext
 ```
 在DraweeHolder的setController()中，会为DraweeController设置其DraweeHierarchy，以建立起Drawee的MVC模型，并将调用attachController()连接控制器，并触发控制器的onAttach()来发送图像请求。
 随后会获取DraweeHierarchy的顶层图像作为显示图像，但由于图像请求结果还未到达，这里的getTopLevelDrawable()获取的可能只是占位图。   
-2. 直接创建一个DraweeController，并调用setController()设置到SimpleDraweeView中
+2. 直接创建一个DraweeController，并调用setController()设置到SimpleDraweeView中   
 &#8195;与1.类似，不过用户可以直接定义和配置DraweeController，并直接设置到SimpleDraweeView中，来获取对图像数据的获取和加工的更多控制。
 
 ##DraweeController

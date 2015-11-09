@@ -1,7 +1,7 @@
 ##WebpTranscodeProducer
 &#8195;WebpTranscodeProducer也是一种处理类型的Producer，用来对WebP格式图片进行解码，其处理业务方法transcodeLastResult()被封装在DelegatingConsumer中。   
 &#8195;WebP格式图片转码任务使用StatefulRunnable框架实现。   
-1. 任务的处理封装在getResult()中：
+&#8195;1.任务的处理封装在getResult()中：
 ```
  protected EncodedImage getResult() throws Exception {
             PooledByteBufferOutputStream outputStream = mPooledByteBufferFactory.newOutputStream();
@@ -21,8 +21,8 @@
             }
           }
 ```   
-调用doTranscode()进行转码，并将输出流构造为EncodedImage返回。   
-2. 转码处理：
+&#8195;调用doTranscode()进行转码，并将输出流构造为EncodedImage返回。   
+&#8195;2.转码处理：
 ```
 private static void doTranscode(
       final EncodedImage encodedImage,
@@ -43,10 +43,9 @@ private static void doTranscode(
         throw new IllegalArgumentException("Wrong image format");
     }
   }
-```   
-转码工作将根据不同的WebP格式调用native方法transcodeWebpToJpeg/transcodeWebpToPng将WebP格式图片转码为Jpeg/Png格式图片。
-
-3. 结果处理：
+```
+&#8195;转码工作将根据不同的WebP格式调用native方法transcodeWebpToJpeg/transcodeWebpToPng将WebP格式图片转码为Jpeg/Png格式图片。   
+&#8195;3.结果处理：
 ```
           @Override
           protected void disposeResult(EncodedImage result) {
@@ -71,5 +70,5 @@ private static void doTranscode(
             super.onCancellation();
           }
         };
-```   
-	失败、成功、取消处理将关闭对WebP图片的引用，而在处理完结果的回调Consumer后，还将释放WebpTranscodeProducer对结果的引用。
+```
+&#8195;失败、成功、取消处理将关闭对WebP图片的引用，而在处理完结果的回调Consumer后，还将释放WebpTranscodeProducer对结果的引用。

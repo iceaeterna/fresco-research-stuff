@@ -16,7 +16,7 @@
   }
 ```
 &#8195;其中，DiskStorageSupplier以Supplier的方式为DiskStorageCache提供磁盘资源文件的操作接口DiskStorage。接下来就分析DiskStorageCache的业务实现：
-1. insert()：   
+#####1. insert()：   
 (1).根据缓存键获取对应的资源id，资源id的生成使用的是SHA-1算法
 ```
  final String resourceId = getResourceId(key);
@@ -35,7 +35,7 @@ BinaryResource temporary = createTemporaryResource(resourceId, key);
       }
 ```
 
-2. hasKey()：指定CacheKey是否存在对应的资源文件
+#####2. hasKey()：指定CacheKey是否存在对应的资源文件
 ```
   public boolean hasKey(final CacheKey key) {
     try {
@@ -46,7 +46,7 @@ BinaryResource temporary = createTemporaryResource(resourceId, key);
   }
 ```
 
-3. getResource()：获取指定CacheKey对应的资源文件
+#####3. getResource()：获取指定CacheKey对应的资源文件
 ```
   public BinaryResource getResource(final CacheKey key) {
     try {
@@ -62,7 +62,7 @@ BinaryResource temporary = createTemporaryResource(resourceId, key);
     }
 ```
 
-4. remove()：删除指定CacheKey对应的资源文件
+#####4. remove()：删除指定CacheKey对应的资源文件
 ```
   public void remove(CacheKey key) {
     synchronized (mLock) {
@@ -106,7 +106,7 @@ trimBy的实现如下：
             CacheEventListener.EvictionReason.CACHE_MANAGER_TRIMMED);
       }
 ```   
-&#8195;其中newMaxBytesInFiles为裁剪缓存内容后可占用的最大字节数。而evictAboveSize()将对缓存项按时间排序后不断尝试删除最早被使用的缓存项内容，直至占用空间缩减到理想值。
+&#8195;其中newMaxBytesInFiles为裁剪缓存内容后可占用的最大字节数。而evictAboveSize()将对缓存项按时间排序后不断尝试删除最早被使用的缓存项内容，直至占用空间缩减到理想值。   
 2. trimToNothing()做法较为极端，将会清除所有缓存内容
 ```
   public void trimToNothing() {

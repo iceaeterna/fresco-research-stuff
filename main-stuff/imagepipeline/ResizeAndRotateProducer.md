@@ -28,8 +28,8 @@
             shouldResize(getScaleNumerator(request, encodedImage)));
   }
 ```
-1. 基本要求就是该图片必须是JPEG格式。   
-2. 在拍照过程中，由于拍照姿势不同，可能图片发生了旋转。当图片携带的旋转角度不为0时，说明发生了旋转(可能是90°、180°、270°)，那么这里就有必要进行旋转调整
+1.基本要求就是该图片必须是JPEG格式。   
+2.在拍照过程中，由于拍照姿势不同，可能图片发生了旋转。当图片携带的旋转角度不为0时，说明发生了旋转(可能是90°、180°、270°)，那么这里就有必要进行旋转调整
 ```
   private static int getRotationAngle(ImageRequest imageRequest, EncodedImage encodedImage) {
     if (!imageRequest.getAutoRotateEnabled()) {
@@ -73,7 +73,7 @@ static int roundNumerator(float maxRatio) {
     return (int) (ROUNDUP_FRACTION + maxRatio * JpegTranscoder.SCALE_DENOMINATOR);
   }
 ```   
-比例因子为(int)(0.67 + 缩放比例 * 8)，最大比例因子为16，即最多可以放大约2倍大小
+比例因子为(int)(0.67 + 缩放比例 * 8)，最大比例因子为16，即最多可以放大约2倍大小   
 (2).比例因子的调整   
 &#8195;用户可以通过ResizeOptions来设置所希望得到图像的大小，但是对于图像大小的调整需要锁定高宽比，使得图像大小在可接受的范围内(分辨率小于2048，但这个值实际上应该通过Canvas.getMaximumBitmapWidth/Height调用进行计算)。
 ```

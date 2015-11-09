@@ -1,7 +1,7 @@
 ##EncodedCacheKeyMultiplexProducer
 &#8195;EncodedCacheKeyMultiplexProducer继承自MultiplexProducer，区别于BitmapMemoryCacheKeyMultiplexProducer，EncodedCacheKeyMultiplexProducer所使用的Multiplexer键如下：
 ```
-  protected Pair<CacheKey, ImageRequest.RequestLevel> getKey(ProducerContext producerContext) { 
+  protected Pair<CacheKey, ImageRequest.RequestLevel> getKey(ProducerContext producerContext) {
     return Pair.create(
         mCacheKeyFactory.getEncodedCacheKey(producerContext.getImageRequest()),
         producerContext.getLowestPermittedRequestLevel());
@@ -20,7 +20,7 @@
     return false;
   }
 ```   
-&#8195;而BitmapCacheKey还混合了大小调整、自动旋转、解码选项信息。   
+&#8195;而BitmapCacheKey还混合了大小调整、自动旋转、解码选项信息。
 ```
   public boolean equals(Object o) {
     if (!(o instanceof BitmapMemoryCacheKey)) {

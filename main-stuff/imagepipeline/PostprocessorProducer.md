@@ -34,7 +34,7 @@
       updateSourceImageRef(newResult, isLast);
     }
 ```
-对于无效的最终结果将适时通知Consumer，否则将对Bitmap进行处理，但考虑到对Bitmap的处理是非常耗时的，所以后处理的工作应该是异步进行的，并且为了避免对Bitmap后处理的冲突操作，需要对后处理过程进行同步控制：
+&#8195;对于无效的最终结果将适时通知Consumer，否则将对Bitmap进行处理，但考虑到对Bitmap的处理是非常耗时的，所以后处理的工作应该是异步进行的，并且为了避免对Bitmap后处理的冲突操作，需要对后处理过程进行同步控制：
 ```
 mExecutor.execute(
           new Runnable() {
@@ -73,7 +73,7 @@ mExecutor.execute(
         } //...
     }
 ```
-真正的处理将交由指定的Postprocessor完成
+&#8195;真正的处理将交由指定的Postprocessor完成
 ```
     private CloseableReference<CloseableImage> postprocessInternal(CloseableImage sourceImage) {
       CloseableStaticBitmap staticBitmap = (CloseableStaticBitmap) sourceImage;
@@ -88,7 +88,7 @@ mExecutor.execute(
       }
     }
 ```
-在Postprocessor的基础实现类BasePostprocessor中，process()方法将使用PlatformBitmapFactory创建一个与源图像副本，并在副本上调用用户自定义的处理方法进行处理。
+&#8195;在Postprocessor的基础实现类BasePostprocessor中，process()方法将使用PlatformBitmapFactory创建一个与源图像副本，并在副本上调用用户自定义的处理方法进行处理。
 ```
   public CloseableReference<Bitmap> process(
       Bitmap sourceBitmap,
