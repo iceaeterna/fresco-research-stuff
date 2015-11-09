@@ -59,10 +59,10 @@ public GenericDraweeView(Context context, GenericDraweeHierarchy hierarchy) {
 
 ```
 
-&#8195;构造方法一：
+&#8195;构造方法一：   
 &#8195;调用传入GenericDraweeHierarchy来创建DraweeHolder对象并调用setHierarchy()完成初始化工作
 
-&#8195;构造方法二~四：
+&#8195;构造方法二~四：   
 &#8195;调用inflateHierarchy(),使用GenericDraweeHierarchyBuilder([建造者模式](https://github.com/icemoonlol/fresco-research-stuff/blob/master/main-stuff/researching_stuffs/drawee_research_stuff/BuilderPattern.md))来构造一个GenericDraweeHierarchy，以此完成初始化工作 ，其中方法二没有指定XML传入的属性值AttributeSet ，将直接使用默认值进行设置。
 
 &#8195;GenericDraweeView为DraweeView创建了一个GenericDraweeHierarchy，但是没有控制器DraweeController。这是因为控制器的实现决定了图像数据获取和处理的方式，作为DraweeView的通用实现类，对DraweeController的初始化应推迟到具体的DraweeView实现类中实现。
@@ -110,10 +110,8 @@ DraweeController的默认建造方式下，只是简单地设置了CallerContext
   }
 ```
 在DraweeHolder的setController()中，会为DraweeController设置其DraweeHierarchy，以建立起Drawee的MVC模型，并将调用attachController()连接控制器，并触发控制器的onAttach()来发送图像请求。
-随后会获取DraweeHierarchy的顶层图像作为显示图像，但由于图像请求结果还未到达，这里的getTopLevelDrawable()获取的可能只是占位图。
-
+随后会获取DraweeHierarchy的顶层图像作为显示图像，但由于图像请求结果还未到达，这里的getTopLevelDrawable()获取的可能只是占位图。   
 2. 直接创建一个DraweeController，并调用setController()设置到SimpleDraweeView中
-
 &#8195;与1.类似，不过用户可以直接定义和配置DraweeController，并直接设置到SimpleDraweeView中，来获取对图像数据的获取和加工的更多控制。
 
 ##DraweeController
@@ -139,7 +137,7 @@ public interface DraweeController {
 &#8195;AbstractDraweeController作为DraweeController的基础实现类，定义了DraweeController的核心业务逻辑，即负责向图像数据源获取图像内容，并设置到DraweeHierarchy中。
 
 &#8195;AbstractDraweeController的核心业务模块有DraweeEventTracker、DeferredReleaser、Executor和可选模块RetryManager、GestureDetector、ControllerListener。
-![](https://github.com/icemoonlol/fresco-research-stuff/blob/master/main-stuff/img/AbstractDraweeController_model.png)
+![](https://github.com/icemoonlol/fresco-research-stuff/blob/master/main-stuff/resources/img/AbstractDraweeController_model.png)
 &#8195;AbstractDraweeController的构造方法，也是对如上模块进行初始化的过程。各个模块的作用如下:   
 - DraweeEventTracker：维护一个Event队列来记录控制器的控制操作(事件)
 
