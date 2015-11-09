@@ -30,7 +30,7 @@ public class DraweeView<DH extends DraweeHierarchy> extends ImageView {
   }
 ```
 &#8195;DraweeView的类型参数为< DH extends DraweeHierarchy >，即泛型边界为DraweeHierarchy或DraweeHierarchy的导出类型。而DraweeView又使用该类型参数定义了一个DraweeHolder对象，并在构造方法init()中调用DraweeHolder的create()来初始化该成员。
-   
+
 &#8195;DraweeHolder对象包括一个泛型成员mHierarchy和一个DraweeController类成员mController，分别为MVC模式中的Model和Controller。而DraweeView所做的工作只是管理其所持有的DraweeHolder的DraweeHierarchy和DraweeController，绑定和获取图像数据源，并将View事件传递给DraweeHolder进行响应处理。这样，当用户使用自定义View，甚至可以直接使用DraweeHolder来进行图像内容的管理。
 
 &#8195;注意，DraweeView以后将直接继承自View而非ImageView，所以类似setImageXxx, setScaleType等ImageView的API最好不要使用。
@@ -86,9 +86,11 @@ public GenericDraweeView(Context context, GenericDraweeHierarchy hierarchy) {
     mSimpleDraweeControllerBuilder = sDraweeControllerBuilderSupplier.get();
   }
   ```
-&#8195;init()初始化了mSimpleDraweeControllerBuilder成员，从命名上可以看出，该成员是SimpleDraweeView所持有的DraweeController的[建造者模式](https://github.com/icemoonlol/fresco-research-stuff/blob/master/main-stuff/researching_stuffs/drawee_research_stuff/BuilderPattern.md)。它是由Fresco系统初始化时创建的Fresco静态私有类成员sDraweeControllerBuilderSupplier所提供的[Supplier模式](https://github.com/icemoonlol/fresco-research-stuff/blob/master/main-stuff/drawee-research-stuff/SupplierPattern.md)。
-1. 调用SimpleDraweeView的setImageURI()设置图像来源  
-那么有了Builder，DraweeController是在是什么时候被创建的？我们可以在SimpleDraweeView中找到答案：
+&#8195;init()初始化了mSimpleDraweeControllerBuilder成员，从命名上可以看出，该成员是SimpleDraweeView所持有的DraweeController的[建造者模式](https://github.com/icemoonlol/fresco-research-stuff/blob/master/main-stuff/researching_stuffs/drawee_research_stuff/BuilderPattern.md)。它是由Fresco系统初始化时创建的Fresco静态私有类成员sDraweeControllerBuilderSupplier所提供的[Supplier模式](https://github.com/icemoonlol/fresco-research-stuff/blob/master/main-stuff/researching_stuffs/drawee_research_stuff/SupplierPattern.md)。
+
+那么有了Builder，DraweeController是在是什么时候被创建的？我们可以在SimpleDraweeView中找到答案：   
+
+1. 调用SimpleDraweeView的setImageURI()设置图像来源
 ```
   public void setImageURI(Uri uri, @Nullable Object callerContext) {
     DraweeController controller = mSimpleDraweeControllerBuilder
@@ -191,8 +193,8 @@ public PipelineDraweeControllerBuilderSupplier(
         mBoundControllerListeners);
   }
 ```
-&#8195;Drawee各个构件的创建和关系方式值得借鉴，<strong>DraweeController的构造采用了PipelineDraweeControllerBuilderSupplier
-->PipelineDraweeControllerBuilder->PipelineDraweeControllerFactory->PipelineDraweeController的创建层次。</strong>
+&#8195;Drawee各个构件的创建和关系方式值得借鉴，**DraweeController的构造采用了PipelineDraweeControllerBuilderSupplier
+->PipelineDraweeControllerBuilder->PipelineDraweeControllerFactory->PipelineDraweeController的创建层次**。   
 &#8195;那么这样设计的目的是什么？
 #####Supplier模式
 &#8195;Supplier可以看做是一个类似工厂模式的实现，封装了AbstractDraweeControllerBuilder的构造过程，以降低模块之间的耦合性。
@@ -424,3 +426,5 @@ protected void submitRequest() {
     return false;
   }
 ```
+
+[返回README](https://github.com/icemoonlol/fresco-research-stuff/blob/master/README.md)

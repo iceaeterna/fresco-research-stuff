@@ -416,3 +416,5 @@ AbstractDataSource的成员如下：
 - step7.DraweeController获取订阅结果后，将成功的返回结果设置到图层予以显示
 
 注：用户可以直接使用BaseDataSubscriber向DataSource注册订阅者，所以同一图片请求可能有多个订阅者。(而控制器是和DraweeHierarchy、DraweeView一一对应的MVC模型，不会把同一个DraweeController设置到多个Model中去，这一点从setController()中也可以看出)
+
+[返回README](https://github.com/icemoonlol/fresco-research-stuff/blob/master/README.md)
