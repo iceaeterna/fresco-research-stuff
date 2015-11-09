@@ -46,7 +46,7 @@
 
   protected final AtomicInteger mState;
 ```   
-&#8195;++ **StatefulRunnable为了更好地实现(任务执行)结果的过程与结果处理之间的解耦，设计了getResult()、onSuccess()、onFailure()、onCancellation()4个不同的方法来进行处理** ++。我们从run()方法的实现来看一下这几个方法的使用：
+&#8195;**StatefulRunnable为了更好地实现(任务执行)结果的过程与结果处理之间的解耦，设计了getResult()、onSuccess()、onFailure()、onCancellation()4个不同的方法来进行处理**。我们从run()方法的实现来看一下这几个方法的使用：
 ```
   public final void run() {
     if (!mState.compareAndSet(STATE_CREATED, STATE_STARTED)) {
@@ -69,5 +69,5 @@
     }
   }
 ```   
-&#8195;++ **getResult()由StatefulRunnable的具体实现类来实现，用来封装任务执行过程并返回计算结果。当成功获取任务执行结果时，将调用onSuccess()方法进行处理，若任务失败则调用onFailure()进行处理，disposeResult()用来对结果进行一些后处理工作。** ++ 
+&#8195;**getResult()由StatefulRunnable的具体实现类来实现，用来封装任务执行过程并返回计算结果。当成功获取任务执行结果时，将调用onSuccess()方法进行处理，若任务失败则调用onFailure()进行处理，disposeResult()用来对结果进行一些后处理工作。**
 &#8195;**StatefulRunnable的任务执行框架不仅实现了任务执行与结果处理的解耦，而且通过原子操作的状态设置来实现轻量级任务同步，使得任务只会被执行一次。**
