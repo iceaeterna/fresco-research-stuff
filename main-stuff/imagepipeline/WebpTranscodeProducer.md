@@ -72,5 +72,3 @@ private static void doTranscode(
         };
 ```
 &#8195;失败、成功、取消处理将关闭对WebP图片的引用，而在处理完结果的回调Consumer后，还将释放WebpTranscodeProducer对结果的引用。
-
-[返回ProducerSequence](https://github.com/icemoonlol/fresco-research-stuff/blob/master/main-stuff/imagepipeline/producer_sequence.md)

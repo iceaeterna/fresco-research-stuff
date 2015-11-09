@@ -17,7 +17,7 @@
     mStagingArea = StagingArea.getInstance();
   }
 ```
-&#8195;其中mFileCache为磁盘文件缓冲(DiskStorageCache)。而StagingArea使用一个缓存键和未解码图像缓冲池引用的HashMap，作为缓冲文件与EncodedImage、磁盘文件与内存的交换区，提供对缓存在磁盘的EncodedImage图像进行存取的接口。下面分析对BufferedDiskCache的操作实现：   
+&#8195;其中mFileCache为磁盘文件缓冲。而StagingArea使用一个缓存键和未解码图像缓冲池引用的HashMap，作为缓冲文件与EncodedImage、磁盘文件与内存的交换区，提供对缓存在磁盘的EncodedImage图像进行存取的接口。下面分析对BufferedDiskCache的操作实现：   
 #####1. put()：   
 (1). 把键值对保存在mStagingArea中
 ```
@@ -57,7 +57,7 @@
       return Task.forResult(true);
     }
 ```
-(2).若交换区中没有该缓存项，则从DiskStorageCache中查找并返回结果，若DiskStorageCache中没有该缓存项对应的文件信息，那么磁盘文件缓冲中就没有该项，这里就会触发一次丢失。
+(2).若交换区中没有该缓存项，则从FileCache中查找并返回结果，若FileCache中没有该缓存项对应的文件信息，那么磁盘文件缓冲中就没有该项，这里就会触发一次丢失。
 ```
  try {
       return Task.call(
@@ -105,7 +105,7 @@ try {
 #####4. remove():
 &#8195;将从StagingArea和FileCache中移除缓存项
 #####5. readFromDiskCache()：   
-&#8195;图片所对应的文件的信息作为BinaryResource保存在DiskStorageCache中，从磁盘中读取EncodedImage的操作就是打开对应磁盘文件的输入流，将其写到Native内存字节缓冲块PooledByteBuffer中，并返回指向该缓冲块的引用。
+&#8195;图片所对应的文件的信息作为BinaryResource保存在FileCache中，从磁盘中读取EncodedImage的操作就是打开对应磁盘文件的输入流，将其写到Native内存字节缓冲块PooledByteBuffer中，并返回指向该缓冲块的引用。
 ```
   private PooledByteBuffer readFromDiskCache(final CacheKey key) throws IOException {
     try {
@@ -152,4 +152,5 @@ try {
    //...
   }
 ```
-#####[关于DiskStorageCache](https://github.com/icemoonlol/fresco-research-stuff/blob/master/main-stuff/cache/DiskStorageCache.md)
+
+[返回cache_summary](https://github.com/icemoonlol/fresco-research-stuff/blob/master/main-stuff/cache_summary.md)

@@ -198,5 +198,3 @@ mSubmitJobRunnable的执行内容只有一个submitJob()方法，JobScheduler对
     }
   }
 ```
-
-[返回ProducerSequence](https://github.com/icemoonlol/fresco-research-stuff/blob/master/main-stuff/imagepipeline/producer_sequence.md)

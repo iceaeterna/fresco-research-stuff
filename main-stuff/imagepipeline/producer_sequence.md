@@ -1,5 +1,8 @@
 ##流水线配置
 
+[TOC]
+
+
 &#8195;ImagePipeline将流水线各段的工作封装成为一个Producer。并由ProducerFactory负责生产各个流水线段，由ProducerSequenceFactory负责根据图像来源将各个流水线段组装成一个完整的流水线。Producer接口的定义如下：
 ```
 public interface Producer<T> {

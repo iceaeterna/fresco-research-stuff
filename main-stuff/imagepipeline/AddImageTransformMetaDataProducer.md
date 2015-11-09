@@ -38,5 +38,3 @@
     }
   }
 ```
-
-[返回ProducerSequence](https://github.com/icemoonlol/fresco-research-stuff/blob/master/main-stuff/imagepipeline/producer_sequence.md)

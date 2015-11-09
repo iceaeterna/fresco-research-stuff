@@ -98,5 +98,3 @@ NativePooledByteBuffer实现了PooledByteBuffer，仅提供了读接口，对Nat
     mBufRef.get().read(offset, buffer, bufferOffset, length);
   }
 ```
-
-[返回PoolFactory](https://github.com/icemoonlol/fresco-research-stuff/blob/master/main-stuff/memory/PoolFactory.md)

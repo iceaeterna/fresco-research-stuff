@@ -38,5 +38,3 @@
 
 ```   
 &#8195;可以看出，BitmapMemoryCacheKeyMultiplexProducer在应用层面上，对“同一Bitmap请求”进行合并，而EncodedCacheKeyMultiplexProducer在数据层面上，对“同一图片来源请求”进行合并。
-
-[返回ProducerSequence](https://github.com/icemoonlol/fresco-research-stuff/blob/master/main-stuff/imagepipeline/producer_sequence.md)

@@ -121,5 +121,4 @@ doTransform()：调用了JpegTranscoder类的native方法transcodeJpeg()，对�
            //...
     }
 ```   
-
-[返回ProducerSequence](https://github.com/icemoonlol/fresco-research-stuff/blob/master/main-stuff/imagepipeline/producer_sequence.md)
+关于图片处理的Native实现将在以后进行。

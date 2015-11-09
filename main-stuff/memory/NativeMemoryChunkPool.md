@@ -161,7 +161,7 @@ initBuckets()使用指定的资源池参数来初始化资源池所拥有的各�
       }
     }//end synchronized
 ```   
-(4).由资源池的具体实现类来进行对应资源的初始化。若失败则进行计数的回滚。注意，**这里的alloc操作时在同步块之外的，因为内存的申请工作可能开销非常大，从而会阻塞其他线程对资源池的操作**。当两个线程都希望获取该资源时，都会尝试初始化新的资源，而新资源的申请不会破坏资源池的管理。但是可能因为这样，导致多个线程都初始化了一份资源导致资源池过大，于是有了下面对资源池大小的检查。
+(4).由资源池的具体实现类来进行对应资源的初始化。若失败则进行计数的回滚。注意，**++这里的alloc操作时在同步块之外的，因为内存的申请工作可能开销非常大，从而会阻塞其他线程对资源池的操作++**。当两个线程都希望获取该资源时，都会尝试初始化新的资源，而新资源的申请不会破坏资源池的管理。但是可能因为这样，导致多个线程都初始化了一份资源导致资源池过大，于是有了下面对资源池大小的检查。
 ```
  V value = null;
     try {
@@ -236,7 +236,7 @@ release()首先将获取该资源对应的Bucket:
 
 #####资源池内存用量的裁剪
 资源池裁剪与其他缓冲类似，分为一般情况下的trimToSize()，即裁剪到合适大小，以及极端情况下的trimToNothing()，即完全清空。   
-1.定额裁剪(trimToSize)：   
+#####1. 定额裁剪(trimToSize)：   
 (1).裁剪量的计算，若已使用的空间大小大于目标大小，那么，应裁剪到已使用空间的大小，否则，裁剪到目标大小。
 ```
     int bytesToFree = Math.min(mUsed.mNumBytes + mFree.mNumBytes - targetSize, mFree.mNumBytes);
@@ -244,6 +244,7 @@ release()首先将获取该资源对应的Bucket:
       return;
     }
 ```
+
 (2).从小尺寸资源到大尺寸资源，按空闲资源队列顺序进行裁剪，直至到达合适的大小。
 ```
     for (int i = 0; i < mBuckets.size(); ++i) {
@@ -262,7 +263,8 @@ release()首先将获取该资源对应的Bucket:
       }
     }
 ```
-2.全额裁剪(trimToNothing)：   
+
+#####2. 全额裁剪(trimToNothing)：   
 (1).需要进行裁剪的Bucket是空闲资源队列不为空的Bucket，并且将其资源大小和正在被使用的资源个数保存在inUseCounts以进行资源池的重置(空闲资源全额裁剪的不变信息需要保留下来)。
 ```
     final List<Bucket<V>> bucketsToTrim = new ArrayList<>(mBuckets.size());
@@ -282,6 +284,7 @@ release()首先将获取该资源对应的Bucket:
       logStats();
     }
 ```
+
 (2).清空空闲资源
 ```
     onParamsChanged();
@@ -375,4 +378,4 @@ maxMemory为虚拟机能从系统中获取内存最大大小。硬上线则比�
     value.close();
   }
 ```
-关于NativeMemoryChunk的创建和其他操作，参考[NativeMemoryChunk](https://github.com/icemoonlol/fresco-research-stuff/blob/master/main-stuff/memory/NativeMemoryChunk.md)
+关于NativeMemoryChunk的创建和其他操作，参考[NativeMemoryChunk](http://)

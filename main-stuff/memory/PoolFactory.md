@@ -67,5 +67,3 @@ PooledByteBuffer分别依赖NativeMemoryChunkPool来获取Native内存块，依�
 在了解完Fresco是如何获取和管理Native内存，以及是如何对Native内存进行读写后，我们来看NativePooledByteBuffer的创建和使用：    
 - [NativePooledByteBuffer](https://github.com/icemoonlol/fresco-research-stuff/blob/master/main-stuff/memory/NativePooledByteBuffer.md)
 
-[返回memory_summary](https://github.com/icemoonlol/fresco-research-stuff/blob/master/main-stuff/memory_summary.md)
-
