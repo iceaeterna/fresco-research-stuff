@@ -19,7 +19,7 @@ NativeMemoryChunk是调用native方法nativeAllocate()申请内存空间的，�
 ```
 此外，还有以下几种对内存块进行操作的方法：   
 
-#####1. 读取给定偏移处的内存值
+#####1.读取给定偏移处的内存值
 ```
   public synchronized byte read(int offset) {
     Preconditions.checkState(!isClosed());
@@ -29,7 +29,7 @@ NativeMemoryChunk是调用native方法nativeAllocate()申请内存空间的，�
   }
 ```
 
-#####2. 将内存中从指定偏移开始若干个字节读到byteArray中的指定偏移位置
+#####2.将内存中从指定偏移开始若干个字节读到byteArray中的指定偏移位置
 ```
   public synchronized int read(
       final int nativeMemoryOffset,
@@ -46,7 +46,7 @@ NativeMemoryChunk是调用native方法nativeAllocate()申请内存空间的，�
 ```
 其中，adjustByteCount()将保证对Native内存的访问不会超出内存块边界，checkBounds()将检查Native内存块和byteArray的边界。   
 
-#####3. 将byteArray中的指定偏移位置若干个字节写到内存中
+#####3.将byteArray中的指定偏移位置若干个字节写到内存中
 ```
   public synchronized int write(
       int nativeMemoryOffset,
@@ -66,7 +66,7 @@ NativeMemoryChunk是调用native方法nativeAllocate()申请内存空间的，�
   }
 ```
 
-#####4. NativeMemoryChunk之间内容的复制
+#####4.NativeMemoryChunk之间内容的复制
 ```
 public void copy(
       final int offset,
@@ -135,3 +135,5 @@ static void NativeMemoryChunk_nativeCopyToByteArray(
       JLONG_TO_PTR(lpointer));
 }
 ```
+
+[返回PoolFactory](https://github.com/icemoonlol/fresco-research-stuff/blob/master/main-stuff/memory/PoolFactory.md)
