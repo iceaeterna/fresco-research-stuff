@@ -9,4 +9,5 @@
 接下来，来看Bitmap(Encoded)MemoryCache和BufferedDiskCache的实现：   
 - [Bitmap(Encoded)MemoryCache](https://github.com/icemoonlol/fresco-research-stuff/blob/master/main-stuff/cache/Bitmap(Encoded)MemoryCache.md)
 - [BufferedDiskCache](https://github.com/icemoonlol/fresco-research-stuff/blob/master/main-stuff/cache/BufferedDiskCache.md)
+
 [返回README](https://github.com/icemoonlol/fresco-research-stuff/blob/master/README.md)
