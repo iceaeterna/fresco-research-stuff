@@ -1,5 +1,9 @@
-####二、ImagePipeline工作过程
-#####1.ImagePipeline简介
+##二、ImagePipeline工作过程
+
+[TOC]
+
+
+###ImagePipeline简介
 > > 下面关于ImagePipeline的描述引自http://fresco-cn.org/docs/configure-image-pipeline.html#_：   
 Image pipeline 负责完成加载图像，变成Android设备可呈现的形式所要做的每个事情。   
 大致流程如下:   
@@ -13,7 +17,7 @@ Image pipeline 负责完成加载图像，变成Android设备可呈现的形式�
 上图中，disk cache实际包含了未解码的内存缓存在内，统一在一起只是为了逻辑稍微清楚一些。   
 Image pipeline 可以从本地文件加载文件，也可以从网络。支持PNG，GIF，WebP, JPEG。   
 
-#####2.ImagePipeline构造
+###ImagePipeline构造
 &#8195;在初始化Fresco的过程中，将初始化ImagePipelineFactory和Drawee部分。Drawee部分的初始化就是创建一个静态的PipelineDraweeControllerBuilderSupplier实例，那么后面将由ImagePipelineFactory的初始化开始，揭开ImagePipeline的神秘面纱。
 ```
   public static void initialize(Context context) {
@@ -119,7 +123,7 @@ public class ImagePipelineFactory {
     }
   }
 ```
-#####3.ImagePipeline工作过程
+###ImagePipeline工作过程
 &#8195;fetchImageFromBitmapCache()和fetchDecodedImage()的调用过程基本相同：
 ```
   public DataSource<CloseableReference<CloseableImage>> fetchImageFromBitmapCache(
@@ -140,7 +144,7 @@ public class ImagePipelineFactory {
   }
 ```
 &#8195;两者均为配置图像生成的获取和加工流水线之后，提交获取请求。区别在于fetchImageFromBitmapCache获取图片的获取深度为仅从BitmapCache中查找，fetchDecodedImage则会在按序在所有Cache中查找，若查找失败则根据Uri从网络或本地等来源获取。fetchImageFromBitmapCache适用于需要快速显示的应用场景，如果没有在较短的时间内获取到图片，就不进行显示。
-#####(1).ImagePipeline流水线配置
+####1.ImagePipeline流水线配置
 &#8195;由于Uri来源、获取方式、处理方式的不同，并且可能设置有不同的图片的加工处理场景，所以需要根据Uri类型和用户设置来组装不同的流水线用于目标图片的获取和处理。
 &#8195;那么我们看下getBasicDecodedImageSequence()：
 ```
@@ -156,6 +160,7 @@ public class ImagePipelineFactory {
   }
 ```
 &#8195;getDecodedImageProducerSequence()处理了用户设置了图片后处理器的情况，用户可以定义[后处理器](http://fresco-cn.org/docs/modifying-image.html#_)来实现一些对于图片的处理工作。
+
 &#8195;getBasicDecodedImageSequence()则会根据Uri的类别对不同来源和类型的图像配置不同的流水线。
 ```
  private Producer<CloseableReference<CloseableImage>> getBasicDecodedImageSequence(
@@ -190,7 +195,7 @@ public class ImagePipelineFactory {
   }
 ```
 关于流水线配置的部分参考[流水线配置](https://github.com/icemoonlol/fresco-research-stuff/blob/master/main-stuff/imagepipeline/producer_sequence.md)
-#####(2).ImagePipeline图片请求配置
+####2.ImagePipeline图片请求配置
 &#8195;在配置完流水线后，ImagePipeline将会发起图片请求，并把图片请求和处理的工作交给流水线完成。
 ```
   private <T> DataSource<CloseableReference<T>> submitFetchRequest(
@@ -222,8 +227,8 @@ public class ImagePipelineFactory {
     }
   }
 ```
-其中，用户可以设置图片请求的获取深度，以控制图片的加载响应速度，而在提交请求前，也会根据用户设置的获取深度来计算本次图片获取的最大深度。最后把图片请求ImageRequest、请求会话ID、调用上下文、请求深度、请求优先级封装在ProducerContext中，并以其和配置好的流水线构造DataSource并发起工作。
-#####(3).ImagePipeline工作发起
+&#8195;其中，用户可以设置图片请求的获取深度，以控制图片的加载响应速度，而在提交请求前，也会根据用户设置的获取深度来计算本次图片获取的最大深度。最后把图片请求ImageRequest、请求会话ID、调用上下文、请求深度、请求优先级封装在ProducerContext中，并以其和配置好的流水线构造DataSource并发起工作。
+####3.ImagePipeline工作发起
 &#8195;紧接着上面的内容，CloseableProducerToDataSourceAdapter的create()方法实际上只是根据传入的配置好的流水线(生产者)、生产上下文、Request监听器来构造一个CloseableProducerToDataSourceAdapter对象
 ```
 public static <T> DataSource<CloseableReference<T>> create(
@@ -275,9 +280,11 @@ public interface Consumer<T> {
 }
 ```
 &#8195;消费者的实现基类为BaseConsumer。值得一提的是，BaseConsumer是线程安全的(ThreadSafe)，所有回调方法均是synchronized的，这样客户端就可以认为所有的回调都发生在同一个线程中。并且BaseConsumer对回调发生的异常会记录。不会出现Producer的多个工作线程同时调用Consumer的回调方法的情况，而避免对DataSource状态的操作冲突。
+
 &#8195;CloseableProducerToDataSourceAdapter的createConsumer()所创建的Consumer触发了RequestListener的回调，并当有新结果或状态返回时会调用setResult()/setFailure()/setProgress()方法来设置结果的内容和状态(对于Jpeg图片来说返回的可能是中间结果)。
-#####(4).ImagePipeline结果处理
+####4.ImagePipeline结果处理
 &#8195;CloseableProducerToDataSourceAdapter作为DataSource的实现类，继承自抽象基类AbstractDataSource，并维护了图片请求的结果和状态。当新结果返回时，就会调用setResult()来设置新结果的内容和状态，而用户调用getResult()则可以获取该结果。
+
 &#8195;由之前分析可知，Drawee和DataSource之间是通过订阅发布模型来完成图片的请求和结果的获取的。那么让我们来了解一下其订阅发布模型是如何实现的。
 AbstractDataSource的成员如下：
 ```
@@ -293,7 +300,7 @@ AbstractDataSource的成员如下：
   private final ConcurrentLinkedQueue<Pair<DataSubscriber<T>, Executor>> mSubscribers;
 ```
 &#8195;AbstractDataSource通过mResult维护对图片请求结果的引用，通过mProgress和mDataSourceStatus、mIsClosed维护图片请求结果的进度和状态，通过mSubscribers维护订阅者队列(使用队列可以保证订阅内容的有序发送)。
-#####订阅：
+#####订阅
 &#8195;在DraweeController的onAttach()方法中，将会创建一个DataSubscriber对象，并向DataSource注册订阅者：
 ```
   public void subscribe(final DataSubscriber<T> dataSubscriber, final Executor executor) {
@@ -319,7 +326,7 @@ AbstractDataSource的成员如下：
   }
 ```
 &#8195;若DataSource已经获取到结果(无论成功还是失败)将直接返回不用注册
-#####发布：
+#####发布
 &#8195;DataSource提供了setResult()、setFailure()、setProgress()的protected方法用于更新DataSource状态，并调用notifyDataSubscribers()通知所有订阅者。以setResult()为例：
 ```
     protected boolean setFailure(Throwable throwable) {
@@ -357,6 +364,7 @@ AbstractDataSource的成员如下：
     }
 ```
 &#8195;setResultInternal会根据返回结果来设置DataSource状态以及图片请求的内容和进度。
+
 &#8195;notifyDataSubscribers()将遍历订阅者队列，并依次发送消息。
 ```
   private void notifyDataSubscribers() {

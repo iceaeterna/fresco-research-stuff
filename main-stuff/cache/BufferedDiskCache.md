@@ -18,7 +18,7 @@
   }
 ```
 &#8195;其中mFileCache为磁盘文件缓冲。而StagingArea使用一个缓存键和未解码图像缓冲池引用的HashMap，作为缓冲文件与EncodedImage、磁盘文件与内存的交换区，提供对缓存在磁盘的EncodedImage图像进行存取的接口。下面分析对BufferedDiskCache的操作实现：   
-1. put()：
+1. put()：   
 (1). 把键值对保存在mStagingArea中
 ```
     // Store encodedImage in staging area
@@ -45,8 +45,8 @@
       mStagingArea.remove(key, encodedImage);
       EncodedImage.closeSafely(finalEncodedImage);
     }
-```  
-2. contains():
+```
+2. contains():   
 (1). 在交换区mStagingArea内查找该项是否存在(交换区获取的EncodedImage引用为不可指向其他EncodedImage的final类型)
 ```
     final EncodedImage pinnedImage = mStagingArea.get(key);
@@ -86,8 +86,8 @@
       //...
       return Task.forError(exception);
     }
-```   
-3. get()：
+```
+3. get()：   
 &#8195;与contains类似，并且当StagingArea中没有该缓存项时，将调用readFromDiskCache()从磁盘文件中读取。
 ```
 try {
@@ -131,7 +131,7 @@ try {
       throw ioe;
     }
   }
-```   
+```
 6. writeToDiskCache()：写操作有所不同，这里调用了mFileCache的insert()，并传入一个写回调方法作为参数，该方法将把EncodedImage的数据写到指定的资源文件的输出流上。
 ```
   private void writeToDiskCache(

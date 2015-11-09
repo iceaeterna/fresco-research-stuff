@@ -1,4 +1,8 @@
-####流水线配置
+##流水线配置
+
+[TOC]
+
+
 &#8195;ImagePipeline将流水线各段的工作封装成为一个Producer。并由ProducerFactory负责生产各个流水线段，由ProducerSequenceFactory负责根据图像来源将各个流水线段组装成一个完整的流水线。Producer接口的定义如下：
 ```
 public interface Producer<T> {
@@ -13,7 +17,7 @@ public interface Producer<T> {
 ```
 &#8195;Producer < T >代表一个任务执行结果为T实例的单个任务，可以理解为流水线的一段。而Producer的实现类通过mNextProducer指向后续流水段来组装成一个完整的流水段。
 
-#####1.后处理段
+###后处理段
 ```
   public Producer<CloseableReference<CloseableImage>> getDecodedImageProducerSequence(
       ImageRequest imageRequest) {
@@ -41,8 +45,9 @@ public interface Producer<T> {
   }
 ```
 &#8195;由上可知，后处理段的流水段为：
+
 ... -> PostprocessorBitmapMemoryCacheProducer -> PostprocessorProducer
-#####2.获取与处理流水段
+###获取与处理流水段
 &#8195;getBasicDecodedImageSequence()将根据不同的Uri类型来组装成为不同结构的流水段。那么以NetworkUri为例分析其流水线构成。
 ```
   private synchronized Producer<CloseableReference<CloseableImage>> getNetworkFetchSequence() {
@@ -63,7 +68,7 @@ public interface Producer<T> {
 ```
 &#8195;因此，流水段可以根据DecoderProducer分为Bitmap图片流水段和未解码图片流水段两部分。
 
-#####(1).Bitmap图片流水段
+####Bitmap图片流水段
 ```
   private Producer<CloseableReference<CloseableImage>> newBitmapCacheGetToBitmapCacheSequence(
       Producer<CloseableReference<CloseableImage>> nextProducer) {
@@ -77,9 +82,10 @@ public interface Producer<T> {
   }
 ```
 &#8195;由上可知，Bitmap缓存获取深度的流水处理为：
-... -> BitmapMemoryCacheGetProducer -> ThreadHandoffProducer-> BitmapMemoryCacheKeyMultiplexProducer 
--> BitmapMemoryCacheProducer
-#####(2).未解码图片流水段(从未解码图片缓存到NetFetch的流水处理)
+
+... -> BitmapMemoryCacheGetProducer -> ThreadHandoffProducer-> BitmapMemoryCacheKeyMultiplexProducer -> BitmapMemoryCacheProducer
+####未解码图片流水段
+(从未解码图片缓存到NetFetch的流水处理)
 ```
   private synchronized Producer<EncodedImage> getCommonNetworkFetchToEncodedMemorySequence() {
     if (mCommonNetworkFetchToEncodedMemorySequence == null) {
@@ -100,8 +106,9 @@ public interface Producer<T> {
 ```
 &#8195;由上可知，从Bitmap缓存到NetFetch的流水处理可以分解为两部分：一部分是包含NetworkFetchProducer的从未解码图片缓冲混流到网络图片转码部分的流水段，一部分是为Jpeg图片解析元数据的AddImageTransformMetaDataProducer流水段和可选的大小调整和旋转的ResizeAndRotateProducer流水段。
 后者的流水段为：
+
 ... -> ResizeAndRotateProducer -> AddImageTransformMetaDataProducer
-######&#8195;未解码图片缓冲混流到网络图片转码部分的流水段：
+#####未解码图片缓冲混流到网络图片转码部分流水段
 ```
   private Producer<EncodedImage> newEncodedCacheMultiplexToTranscodeSequence(
           Producer<EncodedImage> nextProducer) {
@@ -115,16 +122,19 @@ public interface Producer<T> {
   }
 ```
 &#8195;由上可知，包含NetworkFetchProducer的从未解码图片缓冲混流到网络图片转码部分的流水段为：
+
 ...->EncodedCacheKeyMultiplexProducer -> EncodedMemoryCacheProducer -> DiskCacheProducer -> WebpTranscodeProducer -> (NetworkFetchProducer)
 ___
 
 最后NetUri被组装为：
--> PostprocessorBitmapMemoryCacheProducer -> PostprocessorProducer
--> BitmapMemoryCacheGetProducer -> ThreadHandoffProducer-> BitmapMemoryCacheKeyMultiplexProducer 
--> BitmapMemoryCacheProducer
--> DecoderProducer
--> ResizeAndRotateProducer -> AddImageTransformMetaDataProducer
--> EncodedCacheKeyMultiplexProducer -> EncodedMemoryCacheProducer -> DiskCacheProducer -> WebpTranscodeProducer 
+
+-> PostprocessorBitmapMemoryCacheProducer  
+-> PostprocessorProducer  
+-> BitmapMemoryCacheGetProducer -> ThreadHandoffProducer-> BitmapMemoryCacheKeyMultiplexProducer  
+-> BitmapMemoryCacheProducer  
+-> DecoderProducer  
+-> ResizeAndRotateProducer -> AddImageTransformMetaDataProducer  
+-> EncodedCacheKeyMultiplexProducer -> EncodedMemoryCacheProducer -> DiskCacheProducer -> WebpTranscodeProducer  
 -> (NetworkFetchProducer)
 ___
 接下来，将仍以NetUri为例，分析各个流水段的业务实现。

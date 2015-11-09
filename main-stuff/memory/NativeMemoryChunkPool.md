@@ -1,9 +1,6 @@
 ##NativeMemoryChunkPool
 NativeMemoryChunkPool继承自BasePool<NativeMemoryChunk>，实现了Pool接口，以定长内存块为资源单位管理Native内存块资源。在分析NativeMemoryChunkPool之前我们必须明白什么是Pool？Pool是如何组织和实现的？
 
-[TOC]
-
-
 ___
 ###Pool
 Pool定义了资源池所必须实现的两个接口：
@@ -121,6 +118,7 @@ mFree、mUsed分别用来记录空闲块和被使用块的块数和大小信息�
 ```
 initBuckets()使用指定的资源池参数来初始化资源池所拥有的各个子池的资源大小，以传入的一个SparseIntArray来初始化对应大小资源的当前使用量。在资源池构造方法中，资源池各个子池资源的使用量均为0。   
 #####资源池的使用和管理
+
 1. 当有新的资源请求到来时，将调用get(int size)方法尝试获取空闲资源。   
 (1).首先要保证资源池的总大小小于软上限，随后根据申请的资源大小，由具体的资源池实现类来计算适合该资源的整块资源大小(资源块的对齐只能由具体资源池来决定)。
 ```
@@ -189,7 +187,7 @@ initBuckets()使用指定的资源池参数来初始化资源池所拥有的各�
       logStats();
     }
     return value;
-```   
+```
 2. 当应用程序使用完资源后，将调用release()释放资源，之前分析到，Bucket资源队列设置了空闲资源的个数上限，若多个应用程序创建并使用同一种资源，那么使用完后，会尝试将该资源放到空闲资源队列中，但是若资源个数超出上限，那么将立刻释放该资源。   
 release()首先将获取该资源对应的Bucket:
 ```
@@ -197,7 +195,7 @@ release()首先将获取该资源对应的Bucket:
     final int sizeInBytes = getSizeInBytes(bucketedSize);
     synchronized (this) {
       final Bucket<V> bucket = getBucket(bucketedSize);
-```   
+```
 接下来，有以下几种情况：   
 (1).从mInUseValues中移除并释放该资源失败，则直接释放该资源(这个资源并不是该资源池所初始化的，不受其管理)
 ```
@@ -211,7 +209,7 @@ release()首先将获取该资源对应的Bucket:
         mPoolStatsTracker.onFree(sizeInBytes);
       }
 ```   
-(2).若找不到对应的Bucket(可能过大)，或Bucket的资源块数过多(若已使用的资源由用户释放后全部放到空闲资源队列中则超出资源个数限制)，或资源池大小超过软限制，或该资源不可以被重新利用，**++那么只会更新Bucket和mUsed的资源计数并直接释放该资源，而不会将其加入到资源池/空闲资源队列中，即不再会使用该资源++**。
+(2).若找不到对应的Bucket(可能过大)，或Bucket的资源块数过多(若已使用的资源由用户释放后全部放到空闲资源队列中则超出资源个数限制)，或资源池大小超过软限制，或该资源不可以被重新利用，**那么只会更新Bucket和mUsed的资源计数并直接释放该资源，而不会将其加入到资源池/空闲资源队列中，即不再会使用该资源**。
 ```
         if (bucket == null ||
             bucket.isMaxLengthExceeded() ||
@@ -235,16 +233,17 @@ release()首先将获取该资源对应的Bucket:
         }
 ```
 
-#####资源池内存用量的裁剪   
-资源池裁剪与其他缓冲类似，分为一般情况下的trimToSize()，即裁剪到合适大小，以及极端情况下的trimToNothing()，即完全清空。
-1. 定额裁剪(trimToSize)：
+#####资源池内存用量的裁剪
+资源池裁剪与其他缓冲类似，分为一般情况下的trimToSize()，即裁剪到合适大小，以及极端情况下的trimToNothing()，即完全清空。   
+1. 定额裁剪(trimToSize)：   
 (1).裁剪量的计算，若已使用的空间大小大于目标大小，那么，应裁剪到已使用空间的大小，否则，裁剪到目标大小。
 ```
     int bytesToFree = Math.min(mUsed.mNumBytes + mFree.mNumBytes - targetSize, mFree.mNumBytes);
     if (bytesToFree <= 0) {
       return;
     }
-```   
+```
+
 (2).从小尺寸资源到大尺寸资源，按空闲资源队列顺序进行裁剪，直至到达合适的大小。
 ```
     for (int i = 0; i < mBuckets.size(); ++i) {
@@ -262,7 +261,8 @@ release()首先将获取该资源对应的Bucket:
         mFree.decrement(bucket.mItemSize);
       }
     }
-```   
+```
+
 2. 全额裁剪(trimToNothing)：   
 (1).需要进行裁剪的Bucket是空闲资源队列不为空的Bucket，并且将其资源大小和正在被使用的资源个数保存在inUseCounts以进行资源池的重置(空闲资源全额裁剪的不变信息需要保留下来)。
 ```
@@ -282,7 +282,8 @@ release()首先将获取该资源对应的Bucket:
       mFree.reset();
       logStats();
     }
-```   
+```
+
 (2).清空空闲资源
 ```
     onParamsChanged();
@@ -341,7 +342,8 @@ maxMemory为虚拟机能从系统中获取内存最大大小。硬上线则比�
     }
   }
 ```   
-下面关注NativeMemoryChunkPool的关于内存块的一些业务实现：
+下面关注NativeMemoryChunkPool的关于内存块的一些业务实现：   
+
 1. 寻找最小的可以满足申请内存大小的内存块大小
 ```
   protected int getBucketedSize(int requestSize) {
@@ -360,12 +362,14 @@ maxMemory为虚拟机能从系统中获取内存最大大小。硬上线则比�
     return requestSize;
   }
 ```
+
 2. Native内存块分配将创建一个新的NativeMemoryChunk对象
 ```
   protected NativeMemoryChunk alloc(int bucketedSize) {
     return new NativeMemoryChunk(bucketedSize);
   }
 ```
+
 3. Native内存块释放
 ```
   protected void free(NativeMemoryChunk value) {

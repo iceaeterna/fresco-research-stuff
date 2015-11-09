@@ -1,5 +1,5 @@
 ##NativePooledByteBuffer
-[TOC]
+
 ###NativePooledByteBufferFactory
 NativePooledByteBuffer是使用工厂模式构造的，NativePooledByteBufferFactory中对于NativePooledByteBuffer的获取有以下几种形式：
 #####按大小构造
@@ -72,9 +72,10 @@ NativePooledByteBuffer是使用工厂模式构造的，NativePooledByteBufferFac
 联系BufferedDiskCache中读磁盘文件的操作，BufferedDiskCache以文件输入流为内容申请了一块Native内存来存放EncodedImage，而EncodedImage的引用将指向这片Native内存。其过程如下：   
 Native OutputStream会通过NativeMemoryChunkPool申请一块Native内存，而把Java InputStream的内容借助PooledByteStreams通过字符数组写到Native OutputStream中。   
 这里通过下图简单地描述Fresco的Native内存体系：   
-![](http://)
+![](https://github.com/icemoonlol/fresco-research-stuff/blob/master/main-stuff/resources/img/native_mem_hierarchy.png)
 ###NativePooledByteBuffer
 NativePooledByteBuffer实现了PooledByteBuffer，仅提供了读接口，对NativePooledByteBuffer的写工作将由NativePooledByteBufferOutputStream向Native内存写入，以实现对Native内容的保护，防止用户对Native内容的冲突读写操作。
+
 1. 读取指定偏移处字节
 ```
   @Override
@@ -85,6 +86,7 @@ NativePooledByteBuffer实现了PooledByteBuffer，仅提供了读接口，对Nat
     return mBufRef.get().read(offset);
   }
 ```
+
 2. 读取指定偏移和长度的内容到字节缓冲中
 ```
   @Override
