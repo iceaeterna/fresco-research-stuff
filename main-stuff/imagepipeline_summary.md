@@ -1,6 +1,6 @@
-##二、ImagePipeline工作过程
+## 二、ImagePipeline工作过程
 
-###ImagePipeline简介
+### ImagePipeline简介
 > > 下面关于ImagePipeline的描述引自http://fresco-cn.org/docs/configure-image-pipeline.html#_：   
 Image pipeline 负责完成加载图像，变成Android设备可呈现的形式所要做的每个事情。   
 大致流程如下:   
@@ -14,7 +14,7 @@ Image pipeline 负责完成加载图像，变成Android设备可呈现的形式�
 上图中，disk cache实际包含了未解码的内存缓存在内，统一在一起只是为了逻辑稍微清楚一些。   
 Image pipeline 可以从本地文件加载文件，也可以从网络。支持PNG，GIF，WebP, JPEG。   
 
-###ImagePipeline构造
+### ImagePipeline构造
 &#8195;在初始化Fresco的过程中，将初始化ImagePipelineFactory和Drawee部分。Drawee部分的初始化就是创建一个静态的PipelineDraweeControllerBuilderSupplier实例，那么后面将由ImagePipelineFactory的初始化开始，揭开ImagePipeline的神秘面纱。
 ```
   public static void initialize(Context context) {
@@ -120,7 +120,7 @@ public class ImagePipelineFactory {
     }
   }
 ```
-###ImagePipeline工作过程
+### ImagePipeline工作过程
 &#8195;fetchImageFromBitmapCache()和fetchDecodedImage()的调用过程基本相同：
 ```
   public DataSource<CloseableReference<CloseableImage>> fetchImageFromBitmapCache(
@@ -141,7 +141,7 @@ public class ImagePipelineFactory {
   }
 ```
 &#8195;两者均为配置图像生成的获取和加工流水线之后，提交获取请求。区别在于fetchImageFromBitmapCache获取图片的获取深度为仅从BitmapCache中查找，fetchDecodedImage则会在按序在所有Cache中查找，若查找失败则根据Uri从网络或本地等来源获取。fetchImageFromBitmapCache适用于需要快速显示的应用场景，如果没有在较短的时间内获取到图片，就不进行显示。
-####1.ImagePipeline流水线配置
+#### 1.ImagePipeline流水线配置
 &#8195;由于Uri来源、获取方式、处理方式的不同，并且可能设置有不同的图片的加工处理场景，所以需要根据Uri类型和用户设置来组装不同的流水线用于目标图片的获取和处理。   
 &#8195;那么我们看下getBasicDecodedImageSequence()：
 ```
@@ -191,7 +191,7 @@ public class ImagePipelineFactory {
   }
 ```
 关于流水线配置的部分参考[流水线配置](https://github.com/icemoonlol/fresco-research-stuff/blob/master/main-stuff/imagepipeline/producer_sequence.md)
-####2.ImagePipeline图片请求配置
+#### 2.ImagePipeline图片请求配置
 &#8195;在配置完流水线后，ImagePipeline将会发起图片请求，并把图片请求和处理的工作交给流水线完成。
 ```
   private <T> DataSource<CloseableReference<T>> submitFetchRequest(
@@ -224,7 +224,7 @@ public class ImagePipelineFactory {
   }
 ```
 &#8195;其中，用户可以设置图片请求的获取深度，以控制图片的加载响应速度，而在提交请求前，也会根据用户设置的获取深度来计算本次图片获取的最大深度。最后把图片请求ImageRequest、请求会话ID、调用上下文、请求深度、请求优先级封装在ProducerContext中，并以其和配置好的流水线构造DataSource并发起工作。
-####3.ImagePipeline工作发起
+#### 3.ImagePipeline工作发起
 &#8195;紧接着上面的内容，CloseableProducerToDataSourceAdapter的create()方法实际上只是根据传入的配置好的流水线(生产者)、生产上下文、Request监听器来构造一个CloseableProducerToDataSourceAdapter对象
 ```
 public static <T> DataSource<CloseableReference<T>> create(
