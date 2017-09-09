@@ -278,7 +278,7 @@ public interface Consumer<T> {
 &#8195;消费者的实现基类为BaseConsumer。值得一提的是，BaseConsumer是线程安全的(ThreadSafe)，所有回调方法均是synchronized的，这样客户端就可以认为所有的回调都发生在同一个线程中。并且BaseConsumer对回调发生的异常会记录。不会出现Producer的多个工作线程同时调用Consumer的回调方法的情况，而避免对DataSource状态的操作冲突。
 
 &#8195;CloseableProducerToDataSourceAdapter的createConsumer()所创建的Consumer触发了RequestListener的回调，并当有新结果或状态返回时会调用setResult()/setFailure()/setProgress()方法来设置结果的内容和状态(对于Jpeg图片来说返回的可能是中间结果)。
-####4.ImagePipeline结果处理
+#### 4.ImagePipeline结果处理
 &#8195;CloseableProducerToDataSourceAdapter作为DataSource的实现类，继承自抽象基类AbstractDataSource，并维护了图片请求的结果和状态。当新结果返回时，就会调用setResult()来设置新结果的内容和状态，而用户调用getResult()则可以获取该结果。
 
 &#8195;由之前分析可知，Drawee和DataSource之间是通过订阅发布模型来完成图片的请求和结果的获取的。那么让我们来了解一下其订阅发布模型是如何实现的。
