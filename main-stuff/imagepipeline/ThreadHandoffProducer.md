@@ -34,8 +34,9 @@
   }
 ```
 &#8195;StatefulProducerRunnable对象重写了onSuccess()、disposeResult()、getResult()方法，但getResult()不会获取任何结果，其实StatefulProducerRunnable只是借用了StatefulRunnable的执行框架，StatefulProducerRunnable任务本身并没有进行什么实际工作。
+
 ![](https://github.com/icemoonlol/fresco-research-stuff/blob/master/main-stuff/resources/img/ThreadHandoff.png)
-###关于StatefulRunnable
+### 关于StatefulRunnable
 &#8195;StatefulRunnable使用原子操作的AtomicInteger来标记Runnable状态，StatefulRunnable在对象实例化时为STATE_CREATED状态，在开始运行时会被设置为STATE_STARTED状态，而当Runnable还没有开始运行时，可以调用cancel()来终止任务的进行。
 ```
   protected static final int STATE_CREATED = 0;
