@@ -1,4 +1,4 @@
-##BitmapMemoryCacheProducer
+## BitmapMemoryCacheProducer
 &#8195;BitmapMemoryCacheProducer作为Bitmap缓存，将缓存已获取并解码的Bitmap图片。其生产方法produceResults()的实现如下：   
 &#8195;1.首先从Bitmap缓存中查找对应ImageRequest的Bitmap图像是否存在。若存在则还需要查看该图像的分辨率是否完全(渐进式加载可能返回不完整的图像内容)，若完全则表示获取图像的全部内容，将回调Consumer的onProgressUpdate()来通知图像加载完毕。   
 &#8195;考虑到Jpeg图片的渐进式加载过程，无论图片是否加载完全，都将回调onNewResult()来通知新的图像内容获取。在触发本段流水线的Consumer(实际上是之前层层封装的多级Consumer代理)的回调后，将关闭这里对新结果的引用。
