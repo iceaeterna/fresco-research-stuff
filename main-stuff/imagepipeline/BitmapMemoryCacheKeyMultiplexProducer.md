@@ -27,8 +27,9 @@
 ```
 &#8195;getKey()由MultiplexProducer的具体实现类实现，负责根据ProducerContext获取缓存键(CacheKey)，同一请求内容的请求应该具有相同的缓存键，并在MultiplexProducer所维护的HashMap中查询该缓存键对应的Multiplexer是否存在，如果存在，则说明已经有同类请求正在获取结果，新到来的这个请求只需要向Multiplexer注册。如果不存在，则这是一个新的图片请求，则需要创建一个MultiPlexer放入HashMap中，那么这个MultiPlexer就应该是合并的请求了，并且，这个合并请求应当维护所有对应的同类请求，当有结果返回或请求状态变化时通知所有对应的同类请求，并将请求任务交由后续流水段执行。   
 ![](https://github.com/icemoonlol/fresco-research-stuff/blob/master/main-stuff/resources/img/MultiplexerStructure.png)
+
 &#8195;值得注意的是，这个Multiplexer的HashMap为MultiplexProducer的"this"锁所保护，不会出现创建多个同一CacheKey的Multiplexer的情况，并且该锁仅用来保护这个HashMap，而对于MultiPlexer的操作将由MultiPlexer的"this"锁保护，这里对锁的责任范围控制一方面细化了锁的粒度，提高了MultiplexProducer的并行性，另一方面，多个消费线程向MultiPlexer注册的过程如果受MultiplexProducer锁控制的话，那么就难以及时获取最终结果。
-###&#8195;Multiplexer
+### &#8195;Multiplexer
 &#8195;接下来看MultiPlexer是如何设计和工作的：
 ##### 1. addNewConsumer()：
 (1).合并请求状态变化   
