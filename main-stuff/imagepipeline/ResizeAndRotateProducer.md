@@ -1,4 +1,4 @@
-##ResizeAndRotateProducer
+## ResizeAndRotateProducer
 &#8195;ResizeAndRotateProducer根据EXIF元数据对JPEG图片进行大小调整和旋转。   
 &#8195;先了解一下EXIF的概念：   
 &#8195;EXIF（Exchangeable Image File）是“可交换图像文件”的缩写，当中包含了专门为数码相机的照片而定制的元数据，可以记录数码照片的拍摄参数、缩略图及其他属性信息。Exif 信息就是由数码相机在拍摄过程中采集一系列的信息，然后把信息放置在我们熟知的 JPEG/TIFF 文件的头部。Exif 所记录的元数据信息非常丰富，主要包含了以下几类信息：   
@@ -12,7 +12,7 @@
 
 &#8195;很多图像编辑器会自动读取Exif数据来对图像进行优化，最常见的便是从 Exif中读取出相机姿态信息，从而自动识别出竖拍甚至是颠倒拍摄的照片并对其进行旋转校正。也有一些软件可以根据 Exif中的机内处理信息对图像进行针对性优化，从而保证图像不会因为过度处理而失真。  
 &#8195;ResizeAndRotateProducer的处理与DecodeProducer类似，都是使用JobScheduler作业执行框架，将处理业务封装在DelegatingConsumer中，在下个流水段获取结果后触发回调进行处理。  
-#####什么样的图片需要进行大小调整和旋转？
+##### 什么样的图片需要进行大小调整和旋转？
 ```
   private static TriState shouldTransform(
       ImageRequest request,
@@ -96,7 +96,7 @@ static float determineResizeRatio(
     return ratio;
   }
 ```   
-#####大小和方向调整的实现：
+##### 大小和方向调整的实现：
 doTransform()：调用了JpegTranscoder类的native方法transcodeJpeg()，对图像输入流根据旋转角度和比例因子进行旋转和大小调整处理，并将转码输出解析为新的JPEG图片。
 ```
     private void doTransform(EncodedImage encodedImage, boolean isLast) {
