@@ -1,4 +1,4 @@
-##NetworkFetchProducer
+## NetworkFetchProducer
 &#8195;NetworkFetchProducer将调用NetworkFetcher的fetch()方法获取图片
 ```
   public void produceResults(Consumer<EncodedImage> consumer, ProducerContext context) {
@@ -24,7 +24,7 @@
         });
   }
 ```
-#####网络获取结果的处理
+##### 网络获取结果的处理
 &#8195;从返回结果的Java输入流读取图像数据并写到Native输出流中，并适时地返回中间结果，最后当获取到所有的返回结果时，调用handleFinalResult()处理输出流结果。
 ```
   private void onResponse(
