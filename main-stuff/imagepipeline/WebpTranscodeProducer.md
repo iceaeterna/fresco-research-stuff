@@ -1,4 +1,4 @@
-##WebpTranscodeProducer
+## WebpTranscodeProducer
 &#8195;WebpTranscodeProducer也是一种处理类型的Producer，用来对WebP格式图片进行解码，其处理业务方法transcodeLastResult()被封装在DelegatingConsumer中。   
 &#8195;WebP格式图片转码任务使用StatefulRunnable框架实现。   
 &#8195;1.任务的处理封装在getResult()中：
