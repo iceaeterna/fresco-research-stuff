@@ -1,4 +1,4 @@
-##DecodeProducer
+## DecodeProducer
 &#8195;DecodeProducer会根据图片的不同来源选择不同的解码器，并将解码任务封装在DelegatingConsumer中，交由后续流水段在获取到结果或状态变化时完成。
 ```
   public void produceResults(
@@ -20,7 +20,7 @@
   }
 ```
 &#8195;无论是对本地图片进行解码处理的LocalImagesProgressiveDecoder，还是对网络图片进行解码处理的ProgressiveJpegParser，都有着共同的父类ProgressiveDecoder。LocalImagesProgressiveDecoder和NetworkImagesProgressiveDecoder所不同的在于对于渐进式图片的处理，LocalImages不会保存任何中间结果，而NetworkImagesProgressiveDecoder则会对jpeg的扫描次数进行判断和处理。   
-###ProgressiveDecoder
+### ProgressiveDecoder
 1.ProgressiveDecoder通过[JobScheduler的作业调度框架](https://github.com/icemoonlol/fresco-research-stuff/tree/master/main-stuff/imagepipeline_research-stuff/JobScheduler.md)来完成解码任务。   
 &#8195;ProgressiveDecoder向JobScheduler提交的作业如下：
 ```
@@ -94,7 +94,7 @@ mJobScheduler = new JobScheduler(mExecutor, job, mImageDecodeOptions.minDecodeIn
 ```
 doDecode()调用解码器的decodeImage()方法进行解码，当解码成功时调用handleResult()方法进行来通知Consumer。
 
-###关于JobScheduler
+### 关于JobScheduler
 &#8195;JobScheduler是一个作业管理器，用来管理对图片进行解码的作业，对于提交的任务同时只有一个任务被执行，并且至少距离上次任务的执行间隔一定时间。   
 &#8195;调度器具有以下状态：
 ```
