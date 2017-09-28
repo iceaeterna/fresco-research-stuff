@@ -1,4 +1,4 @@
-#####CountingMemoryCache
+##### CountingMemoryCache
 &#8195;CountingMemoryCache的构造方法如下：
 ```
   public CountingMemoryCache(
@@ -31,7 +31,7 @@
 ```   
 需要注意的是，**Entry通过clientCount描述缓存项的使用计数，若没有任何使用者，那么Entry将会被放到可能随时被移除的mExclusiveEntries中以待观察，若该缓存项被命中，那么从观察名单mExclusiveEntries中移除该缓存项，否则，当缓存需要被裁剪时、新的缓存内容到来时，那么这个旧的、无效的缓存项就会被标记为Orphan并移除。**   
 接下来来看CountingMemoryCache缓存操作的实现：   
-#####1. cache()：缓存键值对   
+##### 1. cache()：缓存键值对   
 (1).缓存配置的定期检查
 ```
     Preconditions.checkNotNull(key);
@@ -126,7 +126,7 @@
   }
 ```
 &#8195;最后makeOrphans()将把待移除项标记为Orphans()后释放缓存项引用对象所占用的内存资源。
-#####2. get():获取缓存键对应的值
+##### 2. get():获取缓存键对应的值
 ```
   public CloseableReference<V> get(final K key) {
     CloseableReference<V> clientRef = null;
@@ -143,7 +143,7 @@
   }
 ```
 &#8195;对缓存项的获取作为命中事件，首先会把缓存项从mExclusiveEntries中移除，同时将增加缓存项的引用计数，在对缓存进行过get()操作后，缓存达到一个检查配置的安全点，如cache()一样会检查新配置并进行可能的缓存调整工作。
-#####3. removeAll()：移除给定描述的缓存项
+##### 3. removeAll()：移除给定描述的缓存项
 ```
   public int removeAll(Predicate<K> predicate) {
     ArrayList<Entry<K, V>> oldEntries;
@@ -158,7 +158,7 @@
     return oldEntries.size();
   }
 ```
-#####4. contains()：查找是否存在给定描述的缓存项
+##### 4. contains()：查找是否存在给定描述的缓存项
 ```
   public synchronized boolean contains(Predicate<K> predicate) {
     return !mCachedEntries.getMatchingEntries(predicate).isEmpty();
