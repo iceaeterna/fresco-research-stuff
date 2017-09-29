@@ -15,7 +15,7 @@
         diskCacheConfig.getDiskTrimmableRegistry());
   }
 ```
-&#8195;其中，DiskStorageSupplier以Supplier的方式为DiskStorageCache提供磁盘资源文件的操作接口DiskStorage。接下来就分析DiskStorageCache的业务实现：
+&#8195;其中，DiskStorageSupplier以Supplier的方式为DiskStorageCache提供磁盘资源文件的操作接口DiskStorage(具体实现类为[DefaultDiskStorage](https://github.com/icemoonlol/fresco-research-stuff/blob/master/main-stuff/cache/DefaultDiskStorage.md))。接下来就分析DiskStorageCache的业务实现：
 ##### 1. insert()：插入缓存键值对
 (1).根据缓存键获取对应的资源id，资源id的生成使用的是SHA-1算法
 ```
