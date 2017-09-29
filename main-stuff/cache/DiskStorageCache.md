@@ -1,4 +1,4 @@
-##DiskStorageCache
+## DiskStorageCache
 &#8195;DiskStorageCache实现了FileCache，为BufferedDiskCache提供对磁盘文件的缓存管理服务。DiskStorageCache也是通过工厂模式创建的，以实现构造与使用的分离：   
 ```
   public static DiskStorageCache newDiskStorageCache(DiskCacheConfig diskCacheConfig) {
@@ -16,7 +16,7 @@
   }
 ```
 &#8195;其中，DiskStorageSupplier以Supplier的方式为DiskStorageCache提供磁盘资源文件的操作接口DiskStorage。接下来就分析DiskStorageCache的业务实现：
-#####1. insert()：插入缓存键值对
+##### 1. insert()：插入缓存键值对
 (1).根据缓存键获取对应的资源id，资源id的生成使用的是SHA-1算法
 ```
  final String resourceId = getResourceId(key);
@@ -35,7 +35,7 @@ BinaryResource temporary = createTemporaryResource(resourceId, key);
       }
 ```
 
-#####2. hasKey()：指定CacheKey是否存在对应的资源文件
+##### 2. hasKey()：指定CacheKey是否存在对应的资源文件
 ```
   public boolean hasKey(final CacheKey key) {
     try {
@@ -46,7 +46,7 @@ BinaryResource temporary = createTemporaryResource(resourceId, key);
   }
 ```
 
-#####3. getResource()：获取指定CacheKey对应的资源文件
+##### 3. getResource()：获取指定CacheKey对应的资源文件
 ```
   public BinaryResource getResource(final CacheKey key) {
     try {
@@ -62,7 +62,7 @@ BinaryResource temporary = createTemporaryResource(resourceId, key);
     }
 ```
 
-#####4. remove()：删除指定CacheKey对应的资源文件
+##### 4. remove()：删除指定CacheKey对应的资源文件
 ```
   public void remove(CacheKey key) {
     synchronized (mLock) {
@@ -72,7 +72,7 @@ BinaryResource temporary = createTemporaryResource(resourceId, key);
   }
 ```
 ___
-#####缓存空间用量的裁剪
+##### 缓存空间用量的裁剪
 &#8195;DiskStorageCache实现了DiskTrimmable，通过该接口可以实现对缓存的大小用量进行缩减。
 &#8195;DiskTrimmable提供了两个操作接口：trimToMinimum()和trimToNothing()分别应用于内存空间较小和内存空间耗尽的情况。   
 1. trimToMinimum()将把缓冲内容裁剪到缓存最小限制值
