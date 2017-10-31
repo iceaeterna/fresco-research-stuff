@@ -1,4 +1,4 @@
-##PoolFactory
+## PoolFactory
 PoolFactory提供了由Fresco管理的不同类型的内存池。
 ```
   private BitmapPool mBitmapPool;
