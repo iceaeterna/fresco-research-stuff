@@ -1,8 +1,8 @@
-##NativeMemoryChunkPool
+## NativeMemoryChunkPool
 NativeMemoryChunkPool继承自BasePool<NativeMemoryChunk>，实现了Pool接口，以定长内存块为资源单位管理Native内存块资源。在分析NativeMemoryChunkPool之前我们必须明白什么是Pool？Pool是如何组织和实现的？
 
 ___
-###Pool
+### Pool
 Pool定义了资源池所必须实现的两个接口：
 ```
   V get(int size);
@@ -10,7 +10,7 @@ Pool定义了资源池所必须实现的两个接口：
 ```
 即从资源池中获取和释放资源。
 ___
-###Bucket
+### Bucket
 资源池Pool通过一系列Bucket来维护空闲资源，而Bucket则代表了同等大小(同类)的所有空闲资源，可以看做资源池的每个子池。Bucket负责维护这些同类空闲资源的队列，当资源池收到一个资源请求时，会挑选最合适大小的Bucket，将资源申请交由Bucket进行处理，而Bucket就会取下一个空闲资源返回给请求者。其构造方法如下：
 ```
   public Bucket(int itemSize, int maxLength, int inUseLength) {
@@ -31,7 +31,7 @@ ___
 - mInUseLength：当前被使用的资源数
 
 我们看看对Bucket作为分池是如何对同类资源进行组织和管理的：   
-#####1. 空闲资源的获取   
+##### 1. 空闲资源的获取   
 (1).调用Bucket的get()将尝试获取空闲资源，若获取成功，则更新被使用资源计数
 ```
   public V get() {
@@ -48,7 +48,7 @@ ___
     return (V) mFreeList.poll();
   }
 ```   
-#####2. 占用资源的释放   
+##### 2. 占用资源的释放   
 (1).调用Bucket的release()将释放被占用资源，并更新被使用资源计数
 ```
   public void release(V value) {
@@ -65,7 +65,7 @@ ___
   }
 ```
 ___
-###BasePool
+### BasePool
 BasePool是资源或对象池的基本实现类，资源池被组织为一个Map，Map的每一项都是一个不同的固定大小的空闲资源的子池。BasePool的构造方法如下：
 ```
   public BasePool(
@@ -119,7 +119,7 @@ mFree、mUsed分别用来记录空闲块和被使用块的块数和大小信息�
 initBuckets()使用指定的资源池参数来初始化资源池所拥有的各个子池的资源大小，以传入的一个SparseIntArray来初始化对应大小资源的当前使用量。在资源池构造方法中，资源池各个子池资源的使用量均为0。   
 #####资源池的使用和管理
 
-#####1. 当有新的资源请求到来时，将调用get(int size)方法尝试获取空闲资源。   
+##### 1. 当有新的资源请求到来时，将调用get(int size)方法尝试获取空闲资源。   
 (1).首先要保证资源池的总大小小于软上限，随后根据申请的资源大小，由具体的资源池实现类来计算适合该资源的整块资源大小(资源块的对齐只能由具体资源池来决定)。
 ```
     ensurePoolSizeInvariant();
@@ -188,7 +188,7 @@ initBuckets()使用指定的资源池参数来初始化资源池所拥有的各�
     }
     return value;
 ```
-#####2. 当应用程序使用完资源后，将调用release()释放资源   
+##### 2. 当应用程序使用完资源后，将调用release()释放资源   
 之前分析到，Bucket资源队列设置了空闲资源的个数上限，若多个应用程序创建并使用同一种资源，那么使用完后，会尝试将该资源放到空闲资源队列中，但是若资源个数超出上限，那么将立刻释放该资源。   
 release()首先将获取该资源对应的Bucket:
 ```
@@ -234,7 +234,7 @@ release()首先将获取该资源对应的Bucket:
         }
 ```
 
-#####资源池内存用量的裁剪
+##### 资源池内存用量的裁剪
 资源池裁剪与其他缓冲类似，分为一般情况下的trimToSize()，即裁剪到合适大小，以及极端情况下的trimToNothing()，即完全清空。   
 1.定额裁剪(trimToSize)：   
 (1).裁剪量的计算，若已使用的空间大小大于目标大小，那么，应裁剪到已使用空间的大小，否则，裁剪到目标大小。
@@ -297,7 +297,7 @@ release()首先将获取该资源对应的Bucket:
     }
 ```
 ___
-###NativeMemoryChunkPool
+### NativeMemoryChunkPool
 NativeMemoryChunkPool的构造方法如下：
 ```
   public NativeMemoryChunkPool(
@@ -342,7 +342,7 @@ maxMemory为虚拟机能从系统中获取内存最大大小。硬上线则比�
 ```   
 下面关注NativeMemoryChunkPool的关于内存块的一些业务实现：   
 
-#####1. 寻找最小的可以满足申请内存大小的内存块大小
+##### 1. 寻找最小的可以满足申请内存大小的内存块大小
 ```
   protected int getBucketedSize(int requestSize) {
     int intRequestSize = requestSize;
@@ -361,14 +361,14 @@ maxMemory为虚拟机能从系统中获取内存最大大小。硬上线则比�
   }
 ```
 
-#####2. Native内存块分配将创建一个新的NativeMemoryChunk对象
+##### 2. Native内存块分配将创建一个新的NativeMemoryChunk对象
 ```
   protected NativeMemoryChunk alloc(int bucketedSize) {
     return new NativeMemoryChunk(bucketedSize);
   }
 ```
 
-#####3. Native内存块释放
+##### 3. Native内存块释放
 ```
   protected void free(NativeMemoryChunk value) {
     Preconditions.checkNotNull(value);
